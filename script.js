@@ -289,9 +289,25 @@ document.addEventListener("DOMContentLoaded", function () {
       if (filenameInput) filenameInput.value = basename(file.name);
       if (prevArea) {
         prevArea.innerHTML = "";
+        var wrapper = document.createElement("div");
+        wrapper.className = "preview-item";
         var img = document.createElement("img");
         img.src = URL.createObjectURL(file);
-        prevArea.appendChild(img);
+        wrapper.appendChild(img);
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-remove-btn";
+        removeBtn.innerHTML = "&times;";
+        removeBtn.title = "Remove this image";
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var clearBtn = document.querySelector("#dz-png2jpg .dz-clear-btn");
+          if (clearBtn) clearBtn.click();
+        });
+        wrapper.appendChild(removeBtn);
+        prevArea.appendChild(wrapper);
       }
     }, {
       onClear: function () {
@@ -352,9 +368,25 @@ document.addEventListener("DOMContentLoaded", function () {
       if (filenameInput) filenameInput.value = basename(file.name);
       if (prevArea) {
         prevArea.innerHTML = "";
+        var wrapper = document.createElement("div");
+        wrapper.className = "preview-item";
         var img = document.createElement("img");
         img.src = URL.createObjectURL(file);
-        prevArea.appendChild(img);
+        wrapper.appendChild(img);
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-remove-btn";
+        removeBtn.innerHTML = "&times;";
+        removeBtn.title = "Remove this image";
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var clearBtn = document.querySelector("#dz-jpg2png .dz-clear-btn");
+          if (clearBtn) clearBtn.click();
+        });
+        wrapper.appendChild(removeBtn);
+        prevArea.appendChild(wrapper);
       }
     }, {
       onClear: function () {
@@ -1011,9 +1043,25 @@ document.addEventListener("DOMContentLoaded", function () {
       if (filenameInput) filenameInput.value = basename(file.name) + "_resized";
       if (prevArea) {
         prevArea.innerHTML = "";
+        var wrapper = document.createElement("div");
+        wrapper.className = "preview-item";
         var thumb = document.createElement("img");
         thumb.src = URL.createObjectURL(file);
-        prevArea.appendChild(thumb);
+        wrapper.appendChild(thumb);
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-remove-btn";
+        removeBtn.innerHTML = "&times;";
+        removeBtn.title = "Remove this image";
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var clearBtn = document.querySelector("#dz-resize .dz-clear-btn");
+          if (clearBtn) clearBtn.click();
+        });
+        wrapper.appendChild(removeBtn);
+        prevArea.appendChild(wrapper);
       }
     }, {
       onClear: function () {
@@ -1103,9 +1151,25 @@ document.addEventListener("DOMContentLoaded", function () {
       if (statsEl) statsEl.hidden = true;
       if (prevArea) {
         prevArea.innerHTML = "";
+        var wrapper = document.createElement("div");
+        wrapper.className = "preview-item";
         var img = document.createElement("img");
         img.src = URL.createObjectURL(file);
-        prevArea.appendChild(img);
+        wrapper.appendChild(img);
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-remove-btn";
+        removeBtn.innerHTML = "&times;";
+        removeBtn.title = "Remove this image";
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var clearBtn = document.querySelector("#dz-compress .dz-clear-btn");
+          if (clearBtn) clearBtn.click();
+        });
+        wrapper.appendChild(removeBtn);
+        prevArea.appendChild(wrapper);
       }
     }, {
       onClear: function () {
