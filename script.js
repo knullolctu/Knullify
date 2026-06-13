@@ -298,7 +298,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "preview-remove-btn";
-        removeBtn.innerHTML = "&times;";
         removeBtn.title = "Remove this image";
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();
@@ -377,7 +376,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "preview-remove-btn";
-        removeBtn.innerHTML = "&times;";
         removeBtn.title = "Remove this image";
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();
@@ -546,7 +544,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "preview-remove-btn";
-        removeBtn.innerHTML = "&times;";
         removeBtn.title = "Remove this image";
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();
@@ -739,7 +736,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "preview-remove-btn";
-        removeBtn.innerHTML = "&times;";
         removeBtn.title = "Remove this image";
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();
@@ -1052,7 +1048,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "preview-remove-btn";
-        removeBtn.innerHTML = "&times;";
         removeBtn.title = "Remove this image";
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();
@@ -1160,7 +1155,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "preview-remove-btn";
-        removeBtn.innerHTML = "&times;";
         removeBtn.title = "Remove this image";
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();
@@ -1252,7 +1246,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "preview-remove-btn";
-        removeBtn.innerHTML = "&times;";
         removeBtn.title = "Remove this image";
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();

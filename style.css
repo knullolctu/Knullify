@@ -1091,20 +1091,14 @@ select:focus {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: rgba(17, 22, 36, 0.9);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.75);
+  background: rgba(24, 30, 48, 0.85);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border: none;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 16px;
-  line-height: 1;
-  text-align: center;
-  font-weight: 500;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1117,13 +1111,33 @@ select:focus {
   opacity: 1;
   transform: scale(1);
 }
+.preview-remove-btn::before,
+.preview-remove-btn::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 1.5px;
+  background: var(--c-muted);
+  border-radius: 1px;
+  transition: background var(--transition), transform var(--transition);
+}
+.preview-remove-btn::before {
+  transform: rotate(45deg);
+}
+.preview-remove-btn::after {
+  transform: rotate(-45deg);
+}
 .preview-remove-btn:hover {
-  background: #ff4d4d;
-  border-color: #ff4d4d;
-  color: #fff;
-  transform: scale(1.15) rotate(90deg) !important;
-  box-shadow: 0 0 15px rgba(255, 77, 77, 0.6);
+  background: rgba(255, 80, 80, 0.2);
+}
+.preview-remove-btn:hover::before {
+  background: #ff5c5c;
+  transform: rotate(135deg);
+}
+.preview-remove-btn:hover::after {
+  background: #ff5c5c;
+  transform: rotate(45deg);
 }
 .preview-remove-btn:active {
-  transform: scale(0.95) rotate(90deg) !important;
+  transform: scale(0.9);
 }
