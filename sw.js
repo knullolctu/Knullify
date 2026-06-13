@@ -1,10 +1,11 @@
-const CACHE_NAME = "knullify-v2";
+const CACHE_NAME = "knullify-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./script.js",
   "./manifest.json",
+  "./logo.png",
   "./icon-192.png",
   "./icon-512.png"
 ];
