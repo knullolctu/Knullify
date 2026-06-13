@@ -492,21 +492,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!convertBtn) return;
 
-    setupDropZone("dz-img2pdf", "file-img2pdf", function (files) {
-      _files = files.filter(function (f) { return f.type.startsWith("image/"); });
-      if (!_files.length) { showToast("No valid images selected.", "error"); return; }
+    function renderPreviews() {
+      if (!prevArea) return;
+      prevArea.innerHTML = "";
+      if (!_files.length) {
+        resetDropZone("dz-img2pdf", "file-img2pdf");
+        convertBtn.disabled = true;
+        return;
+      }
       markDropZone("dz-img2pdf", _files.length + " file(s) selected");
       convertBtn.disabled = false;
-      var filenameInput = document.getElementById("img2pdf-filename");
-      if (filenameInput && _files[0]) filenameInput.value = basename(_files[0].name);
-      if (prevArea) {
-        prevArea.innerHTML = "";
-        _files.forEach(function (f) {
-          var img = document.createElement("img");
-          img.src = URL.createObjectURL(f);
-          prevArea.appendChild(img);
+
+      _files.forEach(function (f, idx) {
+        var wrapper = document.createElement("div");
+        wrapper.className = "preview-item";
+
+        var img = document.createElement("img");
+        img.src = URL.createObjectURL(f);
+        wrapper.appendChild(img);
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-remove-btn";
+        removeBtn.innerHTML = "&times;";
+        removeBtn.title = "Remove this image";
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          _files.splice(idx, 1);
+          renderPreviews();
         });
+        wrapper.appendChild(removeBtn);
+
+        prevArea.appendChild(wrapper);
+      });
+    }
+
+    setupDropZone("dz-img2pdf", "file-img2pdf", function (files) {
+      var newFiles = files.filter(function (f) { return f.type.startsWith("image/"); });
+      if (!newFiles.length) { showToast("No valid images selected.", "error"); return; }
+      _files = _files.concat(newFiles);
+      var filenameInput = document.getElementById("img2pdf-filename");
+      if (filenameInput && _files[0] && (!filenameInput.value || filenameInput.value === "images_to_pdf")) {
+        filenameInput.value = basename(_files[0].name);
       }
+      renderPreviews();
     }, {
       multiple: true,
       onClear: function () {
@@ -654,26 +684,53 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!convertBtn) return;
 
-    setupDropZone("dz-img2txt", "file-img2txt", function (files) {
-      _files = files.filter(function (f) { return f.type.startsWith("image/"); });
+    function renderPreviews() {
+      if (!prevArea) return;
+      prevArea.innerHTML = "";
       if (!_files.length) {
-        showToast("Please select valid images.", "error"); return;
+        resetDropZone("dz-img2txt", "file-img2txt");
+        convertBtn.disabled = true;
+        if (resultWrap) resultWrap.hidden = true;
+        return;
       }
       markDropZone("dz-img2txt", _files.length + " image(s) selected");
       convertBtn.disabled = false;
+
+      _files.forEach(function (f, idx) {
+        var wrapper = document.createElement("div");
+        wrapper.className = "preview-item";
+
+        var img = document.createElement("img");
+        img.src = URL.createObjectURL(f);
+        wrapper.appendChild(img);
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-remove-btn";
+        removeBtn.innerHTML = "&times;";
+        removeBtn.title = "Remove this image";
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          _files.splice(idx, 1);
+          renderPreviews();
+        });
+        wrapper.appendChild(removeBtn);
+
+        prevArea.appendChild(wrapper);
+      });
+    }
+
+    setupDropZone("dz-img2txt", "file-img2txt", function (files) {
+      var newFiles = files.filter(function (f) { return f.type.startsWith("image/"); });
+      if (!newFiles.length) { showToast("Please select valid images.", "error"); return; }
+      _files = _files.concat(newFiles);
       var filenameInput = document.getElementById("img2txt-filename");
-      if (filenameInput && _files[0]) {
+      if (filenameInput && _files[0] && (!filenameInput.value || filenameInput.value === "extracted_text")) {
         filenameInput.value = basename(_files[0].name) + "_text";
       }
       if (resultWrap) resultWrap.hidden = true;
-      if (prevArea) {
-        prevArea.innerHTML = "";
-        _files.forEach(function (file) {
-          var img = document.createElement("img");
-          img.src = URL.createObjectURL(file);
-          prevArea.appendChild(img);
-        });
-      }
+      renderPreviews();
     }, {
       multiple: true,
       onClear: function () {
@@ -1105,21 +1162,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!convertBtn) return;
 
-    setupDropZone("dz-merge", "file-merge", function (files) {
-      _files = files.filter(function (f) { return f.type.startsWith("image/"); });
-      if (_files.length < 2) { showToast("Please select at least 2 images.", "error"); return; }
-      markDropZone("dz-merge", _files.length + " images selected");
-      convertBtn.disabled = false;
-      var filenameInput = document.getElementById("merge-filename");
-      if (filenameInput && _files[0]) filenameInput.value = basename(_files[0].name);
-      if (prevArea) {
-        prevArea.innerHTML = "";
-        _files.forEach(function (f) {
-          var img = document.createElement("img");
-          img.src = URL.createObjectURL(f);
-          prevArea.appendChild(img);
-        });
+    function renderPreviews() {
+      if (!prevArea) return;
+      prevArea.innerHTML = "";
+      if (_files.length < 2) {
+        if (_files.length === 0) {
+          resetDropZone("dz-merge", "file-merge");
+        } else {
+          markDropZone("dz-merge", _files.length + " image(s) selected");
+        }
+        convertBtn.disabled = true;
+      } else {
+        markDropZone("dz-merge", _files.length + " images selected");
+        convertBtn.disabled = false;
       }
+
+      _files.forEach(function (f, idx) {
+        var wrapper = document.createElement("div");
+        wrapper.className = "preview-item";
+
+        var img = document.createElement("img");
+        img.src = URL.createObjectURL(f);
+        wrapper.appendChild(img);
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "preview-remove-btn";
+        removeBtn.innerHTML = "&times;";
+        removeBtn.title = "Remove this image";
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          _files.splice(idx, 1);
+          renderPreviews();
+        });
+        wrapper.appendChild(removeBtn);
+
+        prevArea.appendChild(wrapper);
+      });
+    }
+
+    setupDropZone("dz-merge", "file-merge", function (files) {
+      var newFiles = files.filter(function (f) { return f.type.startsWith("image/"); });
+      if (!newFiles.length) return;
+      _files = _files.concat(newFiles);
+      if (_files.length < 2) { showToast("Please select at least 2 images.", "error"); }
+      var filenameInput = document.getElementById("merge-filename");
+      if (filenameInput && _files[0] && (!filenameInput.value || filenameInput.value === "merged_image")) {
+        filenameInput.value = basename(_files[0].name);
+      }
+      renderPreviews();
     }, {
       multiple: true,
       onClear: function () {
@@ -1358,7 +1450,12 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderList() {
       if (!listEl) return;
       listEl.innerHTML = "";
-      if (!_files.length) { listEl.hidden = true; if (infoEl) infoEl.hidden = true; return; }
+      if (!_files.length) {
+        listEl.hidden = true;
+        if (infoEl) infoEl.hidden = true;
+        resetDropZone("dz-pdfmerge", "file-pdfmerge");
+        return;
+      }
       listEl.hidden = false;
       if (infoEl) {
         infoEl.textContent = _files.length + " file(s)  |  " +

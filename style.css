@@ -1068,3 +1068,47 @@ select:focus {
 .dz-clear-btn:active {
   transform: scale(0.97);
 }
+
+/* Individual Preview Item with Remove Button */
+.preview-item {
+  position: relative;
+  display: inline-block;
+  margin: 4px;
+}
+.preview-item img {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border);
+  object-fit: contain;
+  display: block;
+}
+.preview-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  z-index: 10;
+}
+.preview-remove-btn:hover {
+  background: #ff6666;
+  transform: scale(1.15);
+}
+.preview-remove-btn:active {
+  transform: scale(0.95);
+}
