@@ -505,12 +505,33 @@ select:focus {
 }
 
 .checkbox-label {
-  flex-direction: row !important;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
-  gap: 8px !important;
+  gap: 10px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--c-text);
+  width: fit-content;
+  user-select: none;
 }
-.checkbox-label input { width: auto; }
+.checkbox-label:hover {
+  border-color: rgba(var(--c-accent-rgb), 0.35);
+  background: var(--c-surface2);
+}
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--c-accent);
+  cursor: pointer;
+  margin: 0;
+}
 
 /* Buttons */
 .btn-convert {
@@ -806,6 +827,14 @@ select:focus {
   margin-bottom: 6px;
 }
 .made-with strong { color: var(--c-text); }
+.made-with a {
+  color: var(--c-text);
+  transition: color var(--transition);
+  text-decoration: none;
+}
+.made-with a:hover {
+  color: var(--c-accent);
+}
 .heart {
   display: inline-block;
   animation: heartbeat 1.2s ease infinite;
@@ -878,6 +907,58 @@ select:focus {
   .btn-row { flex-direction: column; }
   .btn-row .btn-secondary,
   .btn-row .btn-convert { width: 100%; }
+
+  /* Tool Options Stack & Stretch */
+  .options-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .options-row label, .options-grid label {
+    width: 100%;
+  }
+
+  /* Sliders full-width */
+  .slider {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 6px;
+  }
+
+  /* Color Input full-width button rows */
+  .color-input {
+    width: 100% !important;
+    height: 42px !important;
+    padding: 3px !important;
+  }
+
+  /* Segmented Toggles (Compress Mode Toggles) full-width stretch */
+  .compress-mode-toggle {
+    width: 100%;
+    display: flex;
+  }
+  .mode-btn {
+    flex: 1;
+    text-align: center;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+  }
+
+  /* Target size rows */
+  .targetsize-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .targetsize-inputs input[type="number"],
+  .targetsize-inputs select {
+    width: 100% !important;
+  }
+
+  /* Tactile full-width checkbox toggles */
+  .checkbox-label {
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+  }
 
   /* Touch optimizations */
   input[type="text"],
