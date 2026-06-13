@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- SEO Meta Tags -->
+  <title>Knullify – Free Online File Converter | PNG JPG PDF Image Text</title>
+  <meta name="description"
+    content="Free online file converter. Convert PNG to JPG, JPG to PNG, PDF to Image, Image to PDF, Text to Image, Image to Text, PDF to Text, Text to PDF — all in your browser. No upload. No signup. 100% free." />
+  <meta name="keywords"
+    content="png to jpg converter, jpg to png, pdf to image, image to pdf, text to image, image to text, ocr online, pdf to text, text to pdf, free file converter, online converter, no upload converter" />
+  <meta name="author" content="Knull" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://knullolctu.github.io/Knullify/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Knullify – Free Online File Converter" />
+  <meta property="og:description"
+    content="Convert PNG↔JPG, PDF↔Image, Text↔Image, PDF↔Text — instantly in your browser. No upload. 100% Free." />
+  <meta property="og:url" content="https://knullolctu.github.io/Knullify/" />
+  <meta property="og:image" content="https://knullolctu.github.io/Knullify/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Knullify – Free Online File Converter" />
+  <meta name="twitter:description"
+    content="Convert PNG↔JPG, PDF↔Image, Text↔Image, PDF↔Text — instantly in your browser." />
+  <meta name="twitter:creator" content="@knull" />
+
+  <!-- Schema.org Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Knullify",
+    "description": "Free online file converter for PNG, JPG, PDF, Image and Text formats.",
+    "url": "https://knullolctu.github.io/Knullify/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Knull",
+      "url": "https://github.com/knullolctu"
+    }
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet" />
+
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- jsPDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Tesseract.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <!-- Mammoth.js CDN (DOCX parsing) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ======== HEADER ======== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="logo" aria-label="Knullify Home">
+        <span class="logo-icon"></span>
+        <span class="logo-text">Knullify</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#converters">Converters</a>
+        <a href="#features">Features</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <nav class="mobile-nav" id="mobileNav" aria-hidden="true">
+      <a href="#converters">Converters</a>
+      <a href="#features">Features</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </header>
+
+  <!-- ======== HERO ======== -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-bg-grid" aria-hidden="true"></div>
+    <div class="container hero-content">
+      <div class="hero-badge">🔒 100% In-Browser · No Upload · No Signup</div>
+      <h1 id="hero-heading">Convert Files <span class="accent">Instantly.</span><br />No Server. No Cost.</h1>
+      <p class="hero-sub">PNG ↔ JPG · PDF ↔ Image · Text ↔ Image · PDF ↔ Text · PDF Compress · PDF Resize · PDF Merge ·
+        DOCX → PDF — all in your browser.</p>
+      <a href="#converters" class="btn-primary">Start Converting ↓</a>
+    </div>
+    <div class="hero-ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>PNG→JPG</span><span>JPG→PNG</span><span>PDF→Image</span><span>Image→PDF</span><span>Text→Image</span><span>Image→Text</span><span>PDF→Text</span><span>Text→PDF</span><span>Image
+          Resize</span><span>Image Compress</span><span>Merge Images</span><span>PDF Resizer</span><span>PDF
+          Merger</span><span>PDF
+          Compressor</span><span>DOCX→PDF</span><span>PNG→JPG</span><span>JPG→PNG</span><span>PDF→Image</span><span>Image→PDF</span><span>Text→Image</span><span>Image→Text</span><span>PDF→Text</span><span>Text→PDF</span><span>Image
+          Resize</span><span>Image Compress</span><span>Merge Images</span><span>PDF Resizer</span><span>PDF
+          Merger</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== CONVERTER TABS ======== -->
+  <section class="converters-section" id="converters" aria-labelledby="converters-heading">
+    <div class="container">
+      <h2 id="converters-heading" class="section-title">Choose a Converter</h2>
+      <p class="section-sub">Pick any tool below. Files never leave your device.</p>
+
+      <div class="tab-grid" role="tablist" aria-label="Converter tools">
+        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-png2jpg"
+          data-tab="png2jpg">PNG → JPG</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-jpg2png" data-tab="jpg2png">JPG →
+          PNG</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-pdf2img" data-tab="pdf2img">PDF →
+          Image</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-img2pdf" data-tab="img2pdf">Image →
+          PDF</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-txt2img" data-tab="txt2img">Text →
+          Image</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-img2txt" data-tab="img2txt">Image →
+          Text</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-pdf2txt" data-tab="pdf2txt">PDF →
+          Text</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-txt2pdf" data-tab="txt2pdf">Text →
+          PDF</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-resize" data-tab="resize">Resize
+          Image</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-compress"
+          data-tab="compress">Compress Image</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-merge" data-tab="merge">Merge
+          Images</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-pdfresize" data-tab="pdfresize">PDF
+          Resizer</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-pdfmerge" data-tab="pdfmerge">PDF
+          Merger</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-pdfcompress"
+          data-tab="pdfcompress">PDF Compressor</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-docx2pdf" data-tab="docx2pdf">DOCX →
+          PDF</button>
+      </div>
+
+      <!-- ---- PNG to JPG ---- -->
+      <div class="tab-panel active" id="tab-png2jpg" role="tabpanel" aria-labelledby="tab-btn-png2jpg">
+        <div class="panel-card">
+          <h3>PNG → JPG Converter</h3>
+          <p class="panel-desc">Convert PNG images to JPG format with custom quality settings.</p>
+          <label class="drop-zone" id="dz-png2jpg" for="file-png2jpg">
+            <div class="dz-inner">
+              <div class="dz-icon">🖼️</div>
+              <div class="dz-text">Drop PNG file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .png</div>
+            </div>
+            <input type="file" id="file-png2jpg" accept=".png,image/png" hidden />
+          </label>
+          <div class="options-row">
+            <label>Quality: <span id="q-png2jpg-val">92</span>%
+              <input type="range" id="q-png2jpg" min="10" max="100" value="92" class="slider" />
+            </label>
+            <label>Background color (for transparent):
+              <input type="color" id="bg-png2jpg" value="#ffffff" class="color-input" />
+            </label>
+          </div>
+          <div class="preview-area" id="prev-png2jpg"></div>
+          <button class="btn-convert" id="btn-png2jpg" disabled>Convert & Download JPG</button>
+        </div>
+      </div>
+
+      <!-- ---- JPG to PNG ---- -->
+      <div class="tab-panel" id="tab-jpg2png" role="tabpanel">
+        <div class="panel-card">
+          <h3>JPG → PNG Converter</h3>
+          <p class="panel-desc">Convert JPG/JPEG images to lossless PNG format.</p>
+          <label class="drop-zone" id="dz-jpg2png" for="file-jpg2png">
+            <div class="dz-inner">
+              <div class="dz-icon">🖼️</div>
+              <div class="dz-text">Drop JPG file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .jpg, .jpeg</div>
+            </div>
+            <input type="file" id="file-jpg2png" accept=".jpg,.jpeg,image/jpeg" hidden />
+          </label>
+          <div class="preview-area" id="prev-jpg2png"></div>
+          <button class="btn-convert" id="btn-jpg2png" disabled>Convert & Download PNG</button>
+        </div>
+      </div>
+
+      <!-- ---- PDF to Image ---- -->
+      <div class="tab-panel" id="tab-pdf2img" role="tabpanel">
+        <div class="panel-card">
+          <h3>PDF → Image Converter</h3>
+          <p class="panel-desc">Convert each page of a PDF into a high-quality PNG image.</p>
+          <label class="drop-zone" id="dz-pdf2img" for="file-pdf2img">
+            <div class="dz-inner">
+              <div class="dz-icon">📄</div>
+              <div class="dz-text">Drop PDF file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .pdf</div>
+            </div>
+            <input type="file" id="file-pdf2img" accept=".pdf,application/pdf" hidden />
+          </label>
+          <div class="options-row">
+            <label>Scale (DPI): <span id="scale-pdf2img-val">2x</span>
+              <input type="range" id="scale-pdf2img" min="1" max="4" value="2" step="0.5" class="slider" />
+            </label>
+          </div>
+          <div class="preview-area" id="prev-pdf2img"></div>
+          <button class="btn-convert" id="btn-pdf2img" disabled>Convert Pages to PNG</button>
+          <div id="pdf2img-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="pdf2img-fill"></div>
+            </div>
+            <span id="pdf2img-status"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- Image to PDF ---- -->
+      <div class="tab-panel" id="tab-img2pdf" role="tabpanel">
+        <div class="panel-card">
+          <h3>Image → PDF Converter</h3>
+          <p class="panel-desc">Combine one or more images into a single PDF document.</p>
+          <label class="drop-zone" id="dz-img2pdf" for="file-img2pdf">
+            <div class="dz-inner">
+              <div class="dz-icon">🖼️</div>
+              <div class="dz-text">Drop images here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .jpg, .jpeg, .png, .webp (multiple files)</div>
+            </div>
+            <input type="file" id="file-img2pdf" accept="image/*" multiple hidden />
+          </label>
+          <div class="preview-area" id="prev-img2pdf"></div>
+          <button class="btn-convert" id="btn-img2pdf" disabled>Convert to PDF & Download</button>
+        </div>
+      </div>
+
+      <!-- ---- Text to Image ---- -->
+      <div class="tab-panel" id="tab-txt2img" role="tabpanel">
+        <div class="panel-card">
+          <h3>Text → Image Converter</h3>
+          <p class="panel-desc">Render text on a canvas and download as PNG.</p>
+          <div class="form-group">
+            <label for="txt2img-text">Your Text</label>
+            <textarea id="txt2img-text" rows="6" placeholder="Type or paste your text here..."></textarea>
+          </div>
+          <div class="options-grid">
+            <label>Font Family
+              <select id="txt2img-font">
+                <option value="Syne, sans-serif">Syne (Modern)</option>
+                <option value="Georgia, serif">Georgia (Serif)</option>
+                <option value="'Courier New', monospace">Courier New (Mono)</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+              </select>
+            </label>
+            <label>Font Size (px)
+              <input type="number" id="txt2img-size" value="28" min="10" max="120" />
+            </label>
+            <label>Text Color
+              <input type="color" id="txt2img-color" value="#111111" class="color-input" />
+            </label>
+            <label>Background Color
+              <input type="color" id="txt2img-bg" value="#ffffff" class="color-input" />
+            </label>
+            <label>Canvas Width (px)
+              <input type="number" id="txt2img-w" value="800" min="100" max="4000" />
+            </label>
+            <label>Padding (px)
+              <input type="number" id="txt2img-pad" value="40" min="0" max="200" />
+            </label>
+          </div>
+          <div class="preview-area" id="prev-txt2img"></div>
+          <div class="btn-row">
+            <button class="btn-secondary" id="btn-txt2img-preview">Preview</button>
+            <button class="btn-convert" id="btn-txt2img-dl">Download PNG</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- Image to Text (OCR) ---- -->
+      <div class="tab-panel" id="tab-img2txt" role="tabpanel">
+        <div class="panel-card">
+          <h3>Image → Text (OCR)</h3>
+          <p class="panel-desc">Extract text from images using Tesseract OCR — all in your browser.</p>
+          <label class="drop-zone" id="dz-img2txt" for="file-img2txt">
+            <div class="dz-inner">
+              <div class="dz-icon">🔍</div>
+              <div class="dz-text">Drop images here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .jpg, .jpeg, .png, .webp, .bmp (multiple files)</div>
+            </div>
+            <input type="file" id="file-img2txt" accept="image/*" multiple hidden />
+          </label>
+          <div class="options-row">
+            <label>Language:
+              <select id="img2txt-lang">
+                <option value="eng">English</option>
+                <option value="hin">Hindi</option>
+                <option value="fra">French</option>
+                <option value="deu">German</option>
+                <option value="spa">Spanish</option>
+              </select>
+            </label>
+          </div>
+          <div id="ocr-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="ocr-fill"></div>
+            </div>
+            <span id="ocr-status"></span>
+          </div>
+          <div class="preview-area" id="prev-img2txt"></div>
+          <button class="btn-convert" id="btn-img2txt" disabled>Extract Text</button>
+          <div id="ocr-result-wrap" hidden>
+            <textarea id="ocr-result" rows="8" readonly placeholder="Extracted text will appear here..."></textarea>
+            <div class="btn-row">
+              <button class="btn-secondary" id="btn-copy-ocr">Copy Text</button>
+              <button class="btn-convert" id="btn-dl-ocr">Download .txt</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- PDF to Text ---- -->
+      <div class="tab-panel" id="tab-pdf2txt" role="tabpanel">
+        <div class="panel-card">
+          <h3>PDF → Text Extractor</h3>
+          <p class="panel-desc">Extract all text content from a PDF document instantly.</p>
+          <label class="drop-zone" id="dz-pdf2txt" for="file-pdf2txt">
+            <div class="dz-inner">
+              <div class="dz-icon">📑</div>
+              <div class="dz-text">Drop PDF file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .pdf</div>
+            </div>
+            <input type="file" id="file-pdf2txt" accept=".pdf,application/pdf" hidden />
+          </label>
+          <div id="pdf2txt-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="pdf2txt-fill"></div>
+            </div>
+            <span id="pdf2txt-status"></span>
+          </div>
+          <button class="btn-convert" id="btn-pdf2txt" disabled>Extract Text</button>
+          <div id="pdf2txt-result-wrap" hidden>
+            <textarea id="pdf2txt-result" rows="10" readonly></textarea>
+            <div class="btn-row">
+              <button class="btn-secondary" id="btn-copy-pdf2txt">Copy Text</button>
+              <button class="btn-convert" id="btn-dl-pdf2txt">Download .txt</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- Text to PDF ---- -->
+      <div class="tab-panel" id="tab-txt2pdf" role="tabpanel">
+        <div class="panel-card">
+          <h3>Text → PDF Generator</h3>
+          <p class="panel-desc">Convert plain text or rich content into a downloadable PDF.</p>
+          <div class="form-group">
+            <label for="txt2pdf-title">Document Title (optional)</label>
+            <input type="text" id="txt2pdf-title" placeholder="My Document" />
+          </div>
+          <div class="form-group">
+            <label for="txt2pdf-text">Content</label>
+            <textarea id="txt2pdf-text" rows="10" placeholder="Type or paste your content here..."></textarea>
+          </div>
+          <div class="options-grid">
+            <label>Font Size
+              <input type="number" id="txt2pdf-size" value="12" min="8" max="36" />
+            </label>
+            <label>Page Size
+              <select id="txt2pdf-page">
+                <option value="a4">A4</option>
+                <option value="letter">Letter</option>
+                <option value="a3">A3</option>
+              </select>
+            </label>
+            <label>Text Color
+              <input type="color" id="txt2pdf-color" value="#111111" class="color-input" />
+            </label>
+          </div>
+          <button class="btn-convert" id="btn-txt2pdf">Generate & Download PDF</button>
+        </div>
+      </div>
+
+      <!-- ---- Resize Image ---- -->
+      <div class="tab-panel" id="tab-resize" role="tabpanel">
+        <div class="panel-card">
+          <h3>Image Resizer</h3>
+          <p class="panel-desc">Resize images to exact pixel dimensions or by percentage.</p>
+          <label class="drop-zone" id="dz-resize" for="file-resize">
+            <div class="dz-inner">
+              <div class="dz-icon">📐</div>
+              <div class="dz-text">Drop image here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .jpg, .jpeg, .png, .webp</div>
+            </div>
+            <input type="file" id="file-resize" accept="image/*" hidden />
+          </label>
+          <div class="options-grid">
+            <label>Width (px)
+              <input type="number" id="resize-w" placeholder="e.g. 800" min="1" max="8000" />
+            </label>
+            <label>Height (px)
+              <input type="number" id="resize-h" placeholder="e.g. 600" min="1" max="8000" />
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="resize-lock" checked /> Lock aspect ratio
+            </label>
+            <label>Output Format
+              <select id="resize-fmt">
+                <option value="image/png">PNG</option>
+                <option value="image/jpeg">JPG</option>
+                <option value="image/webp">WebP</option>
+              </select>
+            </label>
+          </div>
+          <div id="resize-info" class="info-badge"></div>
+          <div class="preview-area" id="prev-resize"></div>
+          <button class="btn-convert" id="btn-resize" disabled>Resize & Download</button>
+        </div>
+      </div>
+
+      <!-- ---- Compress Image ---- -->
+      <div class="tab-panel" id="tab-compress" role="tabpanel">
+        <div class="panel-card">
+          <h3>Image Compressor</h3>
+          <p class="panel-desc">Reduce image file size while preserving quality.</p>
+          <label class="drop-zone" id="dz-compress" for="file-compress">
+            <div class="dz-inner">
+              <div class="dz-icon">🗜️</div>
+              <div class="dz-text">Drop image here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .jpg, .jpeg, .png, .webp</div>
+            </div>
+            <input type="file" id="file-compress" accept="image/*" hidden />
+          </label>
+          <div class="options-row">
+            <label>Quality: <span id="q-compress-val">80</span>%
+              <input type="range" id="q-compress" min="1" max="100" value="80" class="slider" />
+            </label>
+          </div>
+          <div id="compress-stats" class="info-badge" hidden></div>
+          <div class="preview-area" id="prev-compress"></div>
+          <button class="btn-convert" id="btn-compress" disabled>Compress & Download</button>
+        </div>
+      </div>
+
+      <!-- ---- Merge Images ---- -->
+      <div class="tab-panel" id="tab-merge" role="tabpanel">
+        <div class="panel-card">
+          <h3>Merge Images</h3>
+          <p class="panel-desc">Stitch multiple images together vertically or horizontally.</p>
+          <label class="drop-zone" id="dz-merge" for="file-merge">
+            <div class="dz-inner">
+              <div class="dz-icon">🔗</div>
+              <div class="dz-text">Drop images here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .jpg, .jpeg, .png (multiple files)</div>
+            </div>
+            <input type="file" id="file-merge" accept="image/*" multiple hidden />
+          </label>
+          <div class="options-row">
+            <label>Direction:
+              <select id="merge-dir">
+                <option value="vertical">Vertical (top to bottom)</option>
+                <option value="horizontal">Horizontal (left to right)</option>
+              </select>
+            </label>
+            <label>Gap (px):
+              <input type="number" id="merge-gap" value="0" min="0" max="100" style="width:70px" />
+            </label>
+            <label>Gap Color:
+              <input type="color" id="merge-gap-color" value="#ffffff" class="color-input" />
+            </label>
+          </div>
+          <div class="preview-area" id="prev-merge"></div>
+          <button class="btn-convert" id="btn-merge" disabled>Merge & Download PNG</button>
+        </div>
+      </div>
+
+      <!-- ---- PDF Resizer ---- -->
+      <div class="tab-panel" id="tab-pdfresize" role="tabpanel">
+        <div class="panel-card">
+          <h3>PDF Resizer</h3>
+          <p class="panel-desc">Change the page dimensions of every page in a PDF — convert to A4, A3, Letter, Legal, or
+            any custom size. Content is scaled to fit the new page. File storage size is not the focus here — use PDF
+            Compressor for that.</p>
+          <label class="drop-zone" id="dz-pdfresize" for="file-pdfresize">
+            <div class="dz-inner">
+              <div class="dz-icon">📏</div>
+              <div class="dz-text">Drop PDF file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .pdf</div>
+            </div>
+            <input type="file" id="file-pdfresize" accept=".pdf,application/pdf" hidden />
+          </label>
+          <div class="options-grid">
+            <label>Target Page Size
+              <select id="pdfresize-size">
+                <option value="a4">A4 (210 × 297 mm)</option>
+                <option value="a3">A3 (297 × 420 mm)</option>
+                <option value="letter">Letter (215.9 × 279.4 mm)</option>
+                <option value="legal">Legal (215.9 × 355.6 mm)</option>
+                <option value="a5">A5 (148 × 210 mm)</option>
+                <option value="b5">B5 (176 × 250 mm)</option>
+                <option value="custom">Custom Size</option>
+              </select>
+            </label>
+            <label>Orientation
+              <select id="pdfresize-orient">
+                <option value="portrait">Portrait</option>
+                <option value="landscape">Landscape</option>
+              </select>
+            </label>
+            <label id="custom-w-wrap" style="display:none">Custom Width (mm)
+              <input type="number" id="pdfresize-cw" value="210" min="10" max="2000" />
+            </label>
+            <label id="custom-h-wrap" style="display:none">Custom Height (mm)
+              <input type="number" id="pdfresize-ch" value="297" min="10" max="2000" />
+            </label>
+            <label>Render Quality
+              <select id="pdfresize-quality">
+                <option value="1.5">Standard (faster)</option>
+                <option value="2.0" selected>High (recommended)</option>
+                <option value="3.0">Very High (slower)</option>
+              </select>
+            </label>
+            <label class="checkbox-label" style="align-self:end">
+              <input type="checkbox" id="pdfresize-fitcontent" checked /> Scale content to fit new page
+            </label>
+          </div>
+          <div id="pdfresize-info" class="info-badge" hidden></div>
+          <div id="pdfresize-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="pdfresize-fill"></div>
+            </div>
+            <span id="pdfresize-status"></span>
+          </div>
+          <button class="btn-convert" id="btn-pdfresize" disabled>Resize PDF &amp; Download</button>
+        </div>
+      </div>
+
+      <!-- ---- PDF Merger ---- -->
+      <div class="tab-panel" id="tab-pdfmerge" role="tabpanel">
+        <div class="panel-card">
+          <h3>PDF Merger</h3>
+          <p class="panel-desc">Combine multiple PDF files into one single PDF. Drag to reorder files before merging.
+            Optionally set a target output file size.</p>
+          <label class="drop-zone" id="dz-pdfmerge" for="file-pdfmerge">
+            <div class="dz-inner">
+              <div class="dz-icon">📎</div>
+              <div class="dz-text">Drop PDF files here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .pdf (select multiple files)</div>
+            </div>
+            <input type="file" id="file-pdfmerge" accept=".pdf,application/pdf" multiple hidden />
+          </label>
+          <div id="pdfmerge-list" class="merge-file-list" hidden></div>
+          <div class="target-size-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="pdfmerge-targetsize-enable" /> Set target file size for merged PDF
+            </label>
+            <div id="pdfmerge-targetsize-wrap" class="targetsize-inputs" style="display:none">
+              <input type="number" id="pdfmerge-targetkb" min="50" max="999999" placeholder="e.g. 2000" />
+              <select id="pdfmerge-targetunit">
+                <option value="kb">KB</option>
+                <option value="mb">MB</option>
+              </select>
+              <span class="targetsize-hint">⚠️ Image quality will be adjusted to reach the target. Layout stays
+                unchanged.</span>
+            </div>
+          </div>
+          <div id="pdfmerge-info" class="info-badge" hidden></div>
+          <div id="pdfmerge-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="pdfmerge-fill"></div>
+            </div>
+            <span id="pdfmerge-status"></span>
+          </div>
+          <button class="btn-convert" id="btn-pdfmerge" disabled>Merge PDFs &amp; Download</button>
+        </div>
+      </div>
+
+      <!-- ---- PDF Compressor ---- -->
+      <div class="tab-panel" id="tab-pdfcompress" role="tabpanel">
+        <div class="panel-card">
+          <h3>PDF Compressor</h3>
+          <p class="panel-desc">Reduce your PDF file size (KB/MB) for email, uploads, or forms. Page dimensions stay
+            exactly the same — only image quality is optimized. Choose a preset level or set an exact target size.</p>
+          <label class="drop-zone" id="dz-pdfcompress" for="file-pdfcompress">
+            <div class="dz-inner">
+              <div class="dz-icon">🗜️</div>
+              <div class="dz-text">Drop PDF file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .pdf</div>
+            </div>
+            <input type="file" id="file-pdfcompress" accept=".pdf,application/pdf" hidden />
+          </label>
+
+          <div class="compress-mode-toggle">
+            <button class="mode-btn active" id="compressmode-preset" type="button">Use Preset Level</button>
+            <button class="mode-btn" id="compressmode-target" type="button">Set Target Size</button>
+          </div>
+
+          <div id="compress-preset-panel">
+            <div class="options-grid">
+              <label>Compression Level
+                <select id="pdfcompress-level">
+                  <option value="screen">Maximum — Screen (smallest file, ~72 dpi)</option>
+                  <option value="ebook" selected>Balanced — eBook (~150 dpi, recommended)</option>
+                  <option value="printer">High Quality — Printer (~300 dpi)</option>
+                  <option value="prepress">Best Quality — Prepress (max quality)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div id="compress-target-panel" style="display:none">
+            <div class="targetsize-inputs" style="display:flex; margin-top:12px;">
+              <input type="number" id="pdfcompress-targetkb" min="10" max="999999" placeholder="e.g. 500" />
+              <select id="pdfcompress-targetunit">
+                <option value="kb">KB</option>
+                <option value="mb">MB</option>
+              </select>
+              <span class="targetsize-hint">Page size unchanged. Auto-adjusts image quality to hit your target
+                (±10%).</span>
+            </div>
+          </div>
+
+          <div id="pdfcompress-info" class="info-badge" hidden></div>
+          <div id="pdfcompress-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="pdfcompress-fill"></div>
+            </div>
+            <span id="pdfcompress-status"></span>
+          </div>
+          <button class="btn-convert" id="btn-pdfcompress" disabled>Compress PDF &amp; Download</button>
+        </div>
+      </div>
+
+      <!-- ---- DOCX → PDF ---- -->
+      <div class="tab-panel" id="tab-docx2pdf" role="tabpanel">
+        <div class="panel-card">
+          <h3>DOCX → PDF Converter</h3>
+          <p class="panel-desc">Convert a Word (.docx) document to a PDF. Headings, paragraphs, bold/italic, lists and
+            tables are preserved.</p>
+          <label class="drop-zone" id="dz-docx2pdf" for="file-docx2pdf">
+            <div class="dz-inner">
+              <div class="dz-icon">📝</div>
+              <div class="dz-text">Drop DOCX file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .docx</div>
+            </div>
+            <input type="file" id="file-docx2pdf"
+              accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+          </label>
+          <div class="options-grid">
+            <label>Page Size
+              <select id="docx2pdf-page">
+                <option value="a4">A4</option>
+                <option value="letter">Letter</option>
+                <option value="a3">A3</option>
+              </select>
+            </label>
+            <label>Font Size (pt)
+              <input type="number" id="docx2pdf-fontsize" value="11" min="7" max="24" />
+            </label>
+          </div>
+          <div id="docx2pdf-info" class="info-badge" hidden></div>
+          <div id="docx2pdf-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="docx2pdf-fill"></div>
+            </div>
+            <span id="docx2pdf-status"></span>
+          </div>
+          <button class="btn-convert" id="btn-docx2pdf" disabled>Convert to PDF &amp; Download</button>
+        </div>
+      </div>
+
+
+    </div><!-- /container -->
+  </section>
+
+  <!-- ======== FEATURES ======== -->
+  <section class="features-section" id="features" aria-labelledby="features-heading">
+    <div class="container">
+      <h2 id="features-heading" class="section-title">Why Choose Knullify?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feat-icon">🛡️</div>
+          <h3>Local & Secure</h3>
+          <p>Your data stays yours. Every conversion runs entirely in your browser, meaning your files never touch an
+            external server.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">🚀</div>
+          <h3>Instant Processing</h3>
+          <p>Skip the upload queues. Enjoy rapid, real-time file conversion right on your machine, even with heavy
+            files.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">💎</div>
+          <h3>Truly Unrestricted</h3>
+          <p>No paywalls, no daily limits, and zero watermarks. Access every single feature without ever creating an
+            account.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">💻</div>
+          <h3>Cross-Platform</h3>
+          <p>Designed to be responsive and lightweight. Smooth performance across desktop, tablet, and mobile devices
+            alike.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">✈️</div>
+          <h3>Offline-Ready</h3>
+          <p>No internet? No problem. Once the app is loaded, you can process your files anywhere, anytime.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon">🧰</div>
+          <h3>All-in-One Toolkit</h3>
+          <p>A versatile suite of over 16 utilities spanning images, PDFs, and text—with more tools added regularly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== FAQ ======== -->
+  <section class="faq-section" id="faq" aria-labelledby="faq-heading">
+    <div class="container">
+      <h2 id="faq-heading" class="section-title">Got Questions? We’ve Got Answers</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Do you store or look at my files?</summary>
+          <p>Never. Every tool runs purely client-side via JavaScript inside your web browser. Your data never touches a
+            remote server and stays completely on your hardware.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What’s the catch? Is it actually free?</summary>
+          <p>No catch, no hidden paywalls, and no watermarks. Knullify is 100% free with unlimited usage—the only limit
+            is the available RAM on your device.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How is the Image-to-Text conversion handled?</summary>
+          <p>We leverage Tesseract.js, a robust open-source OCR engine operating entirely in-browser. It accurately
+            reads text in English, Hindi, French, German, Spanish, and several other languages.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Which file formats can I upload?</summary>
+          <p>Most tools natively accept PNG, JPG/JPEG, WebP, and BMP. Our PDF utilities handle both reading individual
+            assets and compiling multi-page documents.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Is there support for batch-converting images to a single PDF?</summary>
+          <p>Yes. You can select or drag-and-drop multiple images simultaneously into the Image → PDF engine, which will
+            instantly merge them into a single, ordered document.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Can I use this on my phone?</summary>
+          <p>Without a doubt. Knullify is built with modern web responsive standards, ensuring a flawless layout and
+            fully operational tools on both iOS and Android browsers.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== FOOTER ======== -->
+  <footer class="site-footer" aria-label="Site footer">
+    <div class="container">
+      <div class="footer-brand">
+        <span class="footer-brand-name">Knullify</span>
+        <p class="footer-tagline">Free, Fast & Private File Conversions</p>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="made-with">Made by <strong>KNULL</strong></p>
+        <p class="copyright">© <span id="year"></span> Knullify. All rights reserved. · Files never leave your browser.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
