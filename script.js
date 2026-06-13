@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!dz) return;
     dz.classList.add("has-file");
     var hint = dz.querySelector(".dz-hint");
-    if (hint) hint.textContent = "OK  " + fileName;
+    if (hint) hint.textContent = "✓ Selected: " + fileName;
   }
 
   /* ==========================================================
