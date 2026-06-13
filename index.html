@@ -6,6 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
+  <!-- PWA Manifest & App Options -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b0e17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
   <!-- SEO Meta Tags -->
   <title>Knullify – Free Online File Converter | PNG JPG PDF Image Text</title>
   <meta name="description"
@@ -851,6 +858,18 @@
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
   <script src="script.js"></script>
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').then(function (reg) {
+          console.log('ServiceWorker registration successful with scope: ', reg.scope);
+        }, function (err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
 </body>
 
 </html>

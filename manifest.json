@@ -1,0 +1,22 @@
+{
+  "name": "Knullify File Converter",
+  "short_name": "Knullify",
+  "description": "Free Online 100% In-Browser File Converter. Convert PNG, JPG, PDF, Image, DOCX and Text instantly.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0e17",
+  "theme_color": "#0b0e17",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "./icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
