@@ -180,6 +180,10 @@
               <input type="color" id="bg-png2jpg" value="#ffffff" class="color-input" />
             </label>
           </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="png2jpg-filename">Output Filename</label>
+            <input type="text" id="png2jpg-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
           <div class="preview-area" id="prev-png2jpg"></div>
           <button class="btn-convert" id="btn-png2jpg" disabled>Convert & Download JPG</button>
         </div>
@@ -198,6 +202,10 @@
             </div>
             <input type="file" id="file-jpg2png" accept=".jpg,.jpeg,image/jpeg" hidden />
           </label>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="jpg2png-filename">Output Filename</label>
+            <input type="text" id="jpg2png-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
           <div class="preview-area" id="prev-jpg2png"></div>
           <button class="btn-convert" id="btn-jpg2png" disabled>Convert & Download PNG</button>
         </div>
@@ -220,6 +228,10 @@
             <label>Scale (DPI): <span id="scale-pdf2img-val">2x</span>
               <input type="range" id="scale-pdf2img" min="1" max="4" value="2" step="0.5" class="slider" />
             </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="pdf2img-filename">Output Base Filename (for page images)</label>
+            <input type="text" id="pdf2img-filename" placeholder="Enter base filename (without extension)" required />
           </div>
           <div class="preview-area" id="prev-pdf2img"></div>
           <button class="btn-convert" id="btn-pdf2img" disabled>Convert Pages to PNG</button>
@@ -245,6 +257,10 @@
             </div>
             <input type="file" id="file-img2pdf" accept="image/*" multiple hidden />
           </label>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="img2pdf-filename">Output PDF Filename</label>
+            <input type="text" id="img2pdf-filename" placeholder="Enter output filename (without extension)" value="images_to_pdf" required />
+          </div>
           <div class="preview-area" id="prev-img2pdf"></div>
           <button class="btn-convert" id="btn-img2pdf" disabled>Convert to PDF & Download</button>
         </div>
@@ -284,6 +300,10 @@
             <label>Padding (px)
               <input type="number" id="txt2img-pad" value="40" min="0" max="200" />
             </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="txt2img-filename">Output Filename</label>
+            <input type="text" id="txt2img-filename" placeholder="Enter output filename (without extension)" value="text_image" required />
           </div>
           <div class="preview-area" id="prev-txt2img"></div>
           <div class="btn-row">
@@ -327,6 +347,10 @@
           <button class="btn-convert" id="btn-img2txt" disabled>Extract Text</button>
           <div id="ocr-result-wrap" hidden>
             <textarea id="ocr-result" rows="8" readonly placeholder="Extracted text will appear here..."></textarea>
+            <div class="form-group filename-option-group" style="margin-top: 16px; margin-bottom: 12px;">
+              <label for="img2txt-filename">Output Filename</label>
+              <input type="text" id="img2txt-filename" placeholder="Enter output filename (without extension)" value="extracted_text" required />
+            </div>
             <div class="btn-row">
               <button class="btn-secondary" id="btn-copy-ocr">Copy Text</button>
               <button class="btn-convert" id="btn-dl-ocr">Download .txt</button>
@@ -357,6 +381,10 @@
           <button class="btn-convert" id="btn-pdf2txt" disabled>Extract Text</button>
           <div id="pdf2txt-result-wrap" hidden>
             <textarea id="pdf2txt-result" rows="10" readonly></textarea>
+            <div class="form-group filename-option-group" style="margin-top: 16px; margin-bottom: 12px;">
+              <label for="pdf2txt-filename">Output Filename</label>
+              <input type="text" id="pdf2txt-filename" placeholder="Enter output filename (without extension)" required />
+            </div>
             <div class="btn-row">
               <button class="btn-secondary" id="btn-copy-pdf2txt">Copy Text</button>
               <button class="btn-convert" id="btn-dl-pdf2txt">Download .txt</button>
@@ -393,6 +421,10 @@
               <input type="color" id="txt2pdf-color" value="#111111" class="color-input" />
             </label>
           </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="txt2pdf-filename">Output PDF Filename</label>
+            <input type="text" id="txt2pdf-filename" placeholder="Enter output filename (without extension)" value="document" required />
+          </div>
           <button class="btn-convert" id="btn-txt2pdf">Generate & Download PDF</button>
         </div>
       </div>
@@ -428,6 +460,10 @@
               </select>
             </label>
           </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="resize-filename">Output Filename</label>
+            <input type="text" id="resize-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
           <div id="resize-info" class="info-badge"></div>
           <div class="preview-area" id="prev-resize"></div>
           <button class="btn-convert" id="btn-resize" disabled>Resize & Download</button>
@@ -451,6 +487,10 @@
             <label>Quality: <span id="q-compress-val">80</span>%
               <input type="range" id="q-compress" min="1" max="100" value="80" class="slider" />
             </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="compress-filename">Output Filename</label>
+            <input type="text" id="compress-filename" placeholder="Enter output filename (without extension)" required />
           </div>
           <div id="compress-stats" class="info-badge" hidden></div>
           <div class="preview-area" id="prev-compress"></div>
@@ -484,6 +524,10 @@
             <label>Gap Color:
               <input type="color" id="merge-gap-color" value="#ffffff" class="color-input" />
             </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="merge-filename">Output Filename</label>
+            <input type="text" id="merge-filename" placeholder="Enter output filename (without extension)" value="merged_image" required />
           </div>
           <div class="preview-area" id="prev-merge"></div>
           <button class="btn-convert" id="btn-merge" disabled>Merge & Download PNG</button>
@@ -540,6 +584,10 @@
               <input type="checkbox" id="pdfresize-fitcontent" checked /> Scale content to fit new page
             </label>
           </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="pdfresize-filename">Output PDF Filename</label>
+            <input type="text" id="pdfresize-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
           <div id="pdfresize-info" class="info-badge" hidden></div>
           <div id="pdfresize-progress" class="progress-wrap" hidden>
             <div class="progress-bar">
@@ -579,6 +627,10 @@
               <span class="targetsize-hint">⚠️ Image quality will be adjusted to reach the target. Layout stays
                 unchanged.</span>
             </div>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="pdfmerge-filename">Output PDF Filename</label>
+            <input type="text" id="pdfmerge-filename" placeholder="Enter output filename (without extension)" value="merged" required />
           </div>
           <div id="pdfmerge-info" class="info-badge" hidden></div>
           <div id="pdfmerge-progress" class="progress-wrap" hidden>
@@ -636,6 +688,10 @@
             </div>
           </div>
 
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="pdfcompress-filename">Output PDF Filename</label>
+            <input type="text" id="pdfcompress-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
           <div id="pdfcompress-info" class="info-badge" hidden></div>
           <div id="pdfcompress-progress" class="progress-wrap" hidden>
             <div class="progress-bar">
@@ -673,6 +729,10 @@
             <label>Font Size (pt)
               <input type="number" id="docx2pdf-fontsize" value="11" min="7" max="24" />
             </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="docx2pdf-filename">Output PDF Filename</label>
+            <input type="text" id="docx2pdf-filename" placeholder="Enter output filename (without extension)" required />
           </div>
           <div id="docx2pdf-info" class="info-badge" hidden></div>
           <div id="docx2pdf-progress" class="progress-wrap" hidden>

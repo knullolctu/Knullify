@@ -45,6 +45,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (status) status.textContent = msg || "";
   }
 
+  function getOutputFilename(inputId, extension) {
+    var el = document.getElementById(inputId);
+    var val = el ? el.value.trim() : "";
+    if (!val) {
+      showToast("Output filename is required.", "error");
+      return null;
+    }
+    var ext = "." + extension;
+    if (val.toLowerCase().endsWith(ext.toLowerCase())) {
+      val = val.slice(0, -ext.length);
+    }
+    return val + ext;
+  }
+
   function triggerDownload(url, filename, skipPrompt) {
     var finalFilename = filename;
     if (!skipPrompt) {
@@ -226,6 +240,8 @@ document.addEventListener("DOMContentLoaded", function () {
       _file = file;
       markDropZone("dz-png2jpg", file.name);
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("png2jpg-filename");
+      if (filenameInput) filenameInput.value = basename(file.name);
       if (prevArea) {
         prevArea.innerHTML = "";
         var img = document.createElement("img");
@@ -236,6 +252,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     convertBtn.addEventListener("click", async function () {
       if (!_file) return;
+      var outName = getOutputFilename("png2jpg-filename", "jpg");
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Converting...";
@@ -249,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ctx.drawImage(img, 0, 0);
         var quality = qualSlider ? parseInt(qualSlider.value) / 100 : 0.92;
         var blob    = await canvasToBlob(canvas, "image/jpeg", quality);
-        triggerDownload(URL.createObjectURL(blob), basename(_file.name) + ".jpg");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("JPG downloaded!", "success");
       } catch (err) {
         showToast("Conversion failed: " + err.message, "error");
@@ -277,6 +295,8 @@ document.addEventListener("DOMContentLoaded", function () {
       _file = file;
       markDropZone("dz-jpg2png", file.name);
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("jpg2png-filename");
+      if (filenameInput) filenameInput.value = basename(file.name);
       if (prevArea) {
         prevArea.innerHTML = "";
         var img = document.createElement("img");
@@ -287,6 +307,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     convertBtn.addEventListener("click", async function () {
       if (!_file) return;
+      var outName = getOutputFilename("jpg2png-filename", "png");
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Converting...";
@@ -296,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
         canvas.height = img.naturalHeight;
         canvas.getContext("2d").drawImage(img, 0, 0);
         var blob = await canvasToBlob(canvas, "image/png");
-        triggerDownload(URL.createObjectURL(blob), basename(_file.name) + ".png");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("PNG downloaded!", "success");
       } catch (err) {
         showToast("Conversion failed: " + err.message, "error");
@@ -333,6 +355,8 @@ document.addEventListener("DOMContentLoaded", function () {
       _file = file;
       markDropZone("dz-pdf2img", file.name);
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("pdf2img-filename");
+      if (filenameInput) filenameInput.value = basename(file.name);
       if (prevArea) prevArea.innerHTML = "";
     });
 
@@ -340,19 +364,17 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!_file || typeof pdfjsLib === "undefined") {
         showToast("PDF.js not loaded. Check your connection.", "error"); return;
       }
+      var filenameInput = document.getElementById("pdf2img-filename");
+      var userBaseName = filenameInput ? filenameInput.value.trim() : "";
+      if (!userBaseName) {
+        showToast("Output filename is required.", "error");
+        return;
+      }
       try {
         var ab    = await _file.arrayBuffer();
         var pdf   = await pdfjsLib.getDocument({ data: ab }).promise;
         var total = pdf.numPages;
         var scale = parseFloat(scaleSlider ? scaleSlider.value : 2);
-
-        var baseName = basename(_file.name);
-        var userBaseName = prompt("Enter a base filename for the page images:", baseName);
-        if (userBaseName === null) {
-          showToast("Download cancelled", "info");
-          return;
-        }
-        userBaseName = userBaseName.trim() || baseName;
 
         convertBtn.disabled = true;
         convertBtn.textContent = "Processing...";
@@ -405,6 +427,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!_files.length) { showToast("No valid images selected.", "error"); return; }
       markDropZone("dz-img2pdf", _files.length + " file(s) selected");
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("img2pdf-filename");
+      if (filenameInput && _files[0]) filenameInput.value = basename(_files[0].name);
       if (prevArea) {
         prevArea.innerHTML = "";
         _files.forEach(function (f) {
@@ -419,6 +443,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!_files.length || typeof jspdf === "undefined") {
         showToast("jsPDF not loaded. Check your connection.", "error"); return;
       }
+      var userFilename = getOutputFilename("img2pdf-filename", "pdf");
+      if (!userFilename) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Generating PDF...";
@@ -438,14 +464,6 @@ document.addEventListener("DOMContentLoaded", function () {
           canvas.getContext("2d").drawImage(imgEl, 0, 0);
           pdf.addImage(canvas.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, w, h);
         }
-        var defaultName = "images_to_pdf.pdf";
-        var userFilename = prompt("Enter a filename to save as:", defaultName);
-        if (userFilename === null) {
-          showToast("Download cancelled", "info");
-          return;
-        }
-        userFilename = userFilename.trim() || defaultName;
-        if (!userFilename.endsWith(".pdf")) userFilename += ".pdf";
         pdf.save(userFilename);
         showToast("PDF downloaded!", "success");
       } catch (err) {
@@ -531,9 +549,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!textarea || !textarea.value.trim()) {
           showToast("Please enter some text first.", "error"); return;
         }
+        var outName = getOutputFilename("txt2img-filename", "png");
+        if (!outName) return;
         var canvas = renderCanvas();
         var blob   = await canvasToBlob(canvas, "image/png");
-        triggerDownload(URL.createObjectURL(blob), "text_image.png");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Image downloaded!", "success");
       });
     }
@@ -562,6 +582,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       markDropZone("dz-img2txt", _files.length + " image(s) selected");
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("img2txt-filename");
+      if (filenameInput && _files[0]) {
+        filenameInput.value = basename(_files[0].name) + "_text";
+      }
       if (resultWrap) resultWrap.hidden = true;
       if (prevArea) {
         prevArea.innerHTML = "";
@@ -627,8 +651,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnDl) {
       btnDl.addEventListener("click", function () {
         if (!resultTA) return;
+        var outName = getOutputFilename("img2txt-filename", "txt");
+        if (!outName) return;
         var blob = new Blob([resultTA.value], { type: "text/plain" });
-        triggerDownload(URL.createObjectURL(blob), "extracted_text.txt");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Text file downloaded!", "success");
       });
     }
@@ -655,6 +681,8 @@ document.addEventListener("DOMContentLoaded", function () {
       _file = file;
       markDropZone("dz-pdf2txt", file.name);
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("pdf2txt-filename");
+      if (filenameInput) filenameInput.value = basename(file.name) + "_text";
       if (resultWrap) resultWrap.hidden = true;
     });
 
@@ -702,8 +730,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnDl) {
       btnDl.addEventListener("click", function () {
         if (!resultTA) return;
+        var outName = getOutputFilename("pdf2txt-filename", "txt");
+        if (!outName) return;
         var blob = new Blob([resultTA.value], { type: "text/plain" });
-        triggerDownload(URL.createObjectURL(blob), "pdf_text.txt");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Text file downloaded!", "success");
       });
     }
@@ -721,6 +751,15 @@ document.addEventListener("DOMContentLoaded", function () {
     var colorInput  = document.getElementById("txt2pdf-color");
 
     if (!convertBtn) return;
+
+    if (titleInput) {
+      titleInput.addEventListener("input", function () {
+        var filenameInput = document.getElementById("txt2pdf-filename");
+        if (filenameInput) {
+          filenameInput.value = titleInput.value.trim().replace(/[^a-z0-9]/gi, "_").toLowerCase() || "document";
+        }
+      });
+    }
 
     convertBtn.addEventListener("click", function () {
       if (typeof jspdf === "undefined") {
@@ -768,14 +807,9 @@ document.addEventListener("DOMContentLoaded", function () {
           y += lineH;
         });
 
-        var filename = (title || "document").replace(/[^a-z0-9]/gi, "_").toLowerCase() + ".pdf";
-        var userFilename = prompt("Enter a filename to save as:", filename);
-        if (userFilename === null) {
-          showToast("Download cancelled", "info");
-          return;
-        }
-        userFilename = userFilename.trim() || filename;
-        if (!userFilename.endsWith(".pdf")) userFilename += ".pdf";
+        var filename = (title || "document").replace(/[^a-z0-9]/gi, "_").toLowerCase();
+        var userFilename = getOutputFilename("txt2pdf-filename", "pdf");
+        if (!userFilename) return;
         pdf.save(userFilename);
         showToast("PDF downloaded!", "success");
       } catch (err) {
@@ -817,6 +851,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (infoEl) { infoEl.textContent = "Original: " + _origW + " x " + _origH + "px - " + formatBytes(file.size); infoEl.style.display = "inline-block"; }
       markDropZone("dz-resize", file.name);
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("resize-filename");
+      if (filenameInput) filenameInput.value = basename(file.name) + "_resized";
       if (prevArea) {
         prevArea.innerHTML = "";
         var thumb = document.createElement("img");
@@ -842,6 +878,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     convertBtn.addEventListener("click", async function () {
       if (!_file) return;
+      var mime = fmtSel ? fmtSel.value : "image/png";
+      var ext  = mime.split("/")[1];
+      var outName = getOutputFilename("resize-filename", ext);
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Resizing...";
@@ -851,10 +891,8 @@ document.addEventListener("DOMContentLoaded", function () {
         var canvas = document.createElement("canvas");
         canvas.width = w; canvas.height = h;
         canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-        var mime = fmtSel ? fmtSel.value : "image/png";
-        var ext  = mime.split("/")[1];
         var blob = await canvasToBlob(canvas, mime, 0.92);
-        triggerDownload(URL.createObjectURL(blob), basename(_file.name) + "_" + w + "x" + h + "." + ext);
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Resized to " + w + "x" + h + " and downloaded!", "success");
       } catch (err) {
         showToast("Resize failed: " + err.message, "error");
@@ -891,6 +929,8 @@ document.addEventListener("DOMContentLoaded", function () {
       _file = file;
       markDropZone("dz-compress", file.name);
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("compress-filename");
+      if (filenameInput) filenameInput.value = basename(file.name) + "_compressed";
       if (statsEl) statsEl.hidden = true;
       if (prevArea) {
         prevArea.innerHTML = "";
@@ -902,6 +942,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     convertBtn.addEventListener("click", async function () {
       if (!_file) return;
+      var outName = getOutputFilename("compress-filename", "jpg");
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Compressing...";
@@ -918,7 +960,7 @@ document.addEventListener("DOMContentLoaded", function () {
           statsEl.textContent = "Original: " + formatBytes(_file.size) + "  =>  Compressed: " + formatBytes(blob.size) + " (" + (pct > 0 ? "-" : "+") + Math.abs(pct) + "%)";
           statsEl.hidden = false;
         }
-        triggerDownload(URL.createObjectURL(blob), basename(_file.name) + "_compressed.jpg");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Compressed & downloaded!", "success");
       } catch (err) {
         showToast("Compression failed: " + err.message, "error");
@@ -947,6 +989,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (_files.length < 2) { showToast("Please select at least 2 images.", "error"); return; }
       markDropZone("dz-merge", _files.length + " images selected");
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("merge-filename");
+      if (filenameInput && _files[0]) filenameInput.value = basename(_files[0].name);
       if (prevArea) {
         prevArea.innerHTML = "";
         _files.forEach(function (f) {
@@ -959,6 +1003,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     convertBtn.addEventListener("click", async function () {
       if (_files.length < 2) return;
+      var outName = getOutputFilename("merge-filename", "png");
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Merging...";
@@ -994,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         var blob = await canvasToBlob(canvas, "image/png");
-        triggerDownload(URL.createObjectURL(blob), "merged_image.png");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Merged image downloaded!", "success");
       } catch (err) {
         showToast("Merge failed: " + err.message, "error");
@@ -1052,6 +1098,8 @@ document.addEventListener("DOMContentLoaded", function () {
       markDropZone("dz-pdfresize", file.name);
       if (infoEl) { infoEl.textContent = "Selected: " + file.name + "  |  " + formatBytes(file.size); infoEl.hidden = false; }
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("pdfresize-filename");
+      if (filenameInput) filenameInput.value = basename(file.name) + "_resized";
     });
 
     convertBtn.addEventListener("click", async function () {
@@ -1059,6 +1107,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (typeof pdfjsLib === "undefined" || typeof jspdf === "undefined") {
         showToast("Required libraries not loaded. Check your internet connection.", "error"); return;
       }
+      var outName = getOutputFilename("pdfresize-filename", "pdf");
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Resizing...";
@@ -1131,7 +1181,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var blob = outPdf.output("blob");
         setProgress("pdfresize-fill", "pdfresize-status", 100,
           "Done! Output size: " + formatBytes(blob.size));
-        triggerDownload(URL.createObjectURL(blob), basename(_file.name) + "_resized.pdf");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("PDF resized to " + tw + " x " + th + " mm & downloaded!", "success");
       } catch (err) {
         showToast("PDF resize failed: " + err.message, "error");
@@ -1222,6 +1272,8 @@ document.addEventListener("DOMContentLoaded", function () {
       renderList();
       convertBtn.disabled = _files.length < 2;
       markDropZone("dz-pdfmerge", _files.length + " PDF(s) selected");
+      var filenameInput = document.getElementById("pdfmerge-filename");
+      if (filenameInput && _files[0]) filenameInput.value = basename(_files[0].name);
     }, { multiple: true });
 
     async function buildMergedPdf(allDocs, quality, progressCb) {
@@ -1266,6 +1318,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (_files.length < 2 || typeof pdfjsLib === "undefined" || typeof jspdf === "undefined") {
         showToast("Need at least 2 PDFs and libraries loaded.", "error"); return;
       }
+      var outName = getOutputFilename("pdfmerge-filename", "pdf");
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Merging...";
@@ -1307,7 +1361,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setProgress("pdfmerge-fill", "pdfmerge-status", 100, "Done!");
         var blob = outPdf.output("blob");
-        triggerDownload(URL.createObjectURL(blob), "merged.pdf");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Merged! Output: " + formatBytes(blob.size), "success");
       } catch (err) {
         showToast("PDF merge failed: " + err.message, "error");
@@ -1371,6 +1425,8 @@ document.addEventListener("DOMContentLoaded", function () {
       markDropZone("dz-pdfcompress", file.name);
       if (infoEl) { infoEl.textContent = "Original: " + file.name + "  |  " + formatBytes(file.size); infoEl.hidden = false; }
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("pdfcompress-filename");
+      if (filenameInput) filenameInput.value = basename(file.name) + "_compressed";
     });
 
     /* Render all pages at given JPEG quality — dimensions PRESERVED */
@@ -1439,7 +1495,8 @@ document.addEventListener("DOMContentLoaded", function () {
         var val = targetKbInp ? parseFloat(targetKbInp.value) : 0;
         if (!val || val <= 0) { showToast("Please enter a valid target file size.", "error"); return; }
       }
-
+      var outName = getOutputFilename("pdfcompress-filename", "pdf");
+      if (!outName) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Compressing...";
@@ -1474,7 +1531,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         setProgress("pdfcompress-fill", "pdfcompress-status", 100, summary);
         if (infoEl) { infoEl.textContent = "Result: " + summary; infoEl.hidden = false; }
-        triggerDownload(URL.createObjectURL(blob), basename(_file.name) + "_compressed.pdf");
+        triggerDownload(URL.createObjectURL(blob), outName, true);
         showToast("Compressed! " + summary, "success", 6000);
       } catch (err) {
         showToast("Compression failed: " + err.message, "error");
@@ -1509,6 +1566,8 @@ document.addEventListener("DOMContentLoaded", function () {
       markDropZone("dz-docx2pdf", file.name);
       if (infoEl) { infoEl.textContent = "Selected: " + file.name + "  |  " + formatBytes(file.size); infoEl.hidden = false; }
       convertBtn.disabled = false;
+      var filenameInput = document.getElementById("docx2pdf-filename");
+      if (filenameInput) filenameInput.value = basename(file.name);
     });
 
     convertBtn.addEventListener("click", async function () {
@@ -1519,6 +1578,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (typeof jspdf === "undefined") {
         showToast("jsPDF not loaded. Check your internet connection.", "error"); return;
       }
+      var userFilename = getOutputFilename("docx2pdf-filename", "pdf");
+      if (!userFilename) return;
       try {
         convertBtn.disabled = true;
         convertBtn.textContent = "Converting...";
@@ -1568,14 +1629,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         setProgress("docx2pdf-fill", "docx2pdf-status", 100, "Done!");
-        var defaultName = basename(_file.name) + ".pdf";
-        var userFilename = prompt("Enter a filename to save as:", defaultName);
-        if (userFilename === null) {
-          showToast("Download cancelled", "info");
-          return;
-        }
-        userFilename = userFilename.trim() || defaultName;
-        if (!userFilename.endsWith(".pdf")) userFilename += ".pdf";
         pdf.save(userFilename);
         showToast("DOCX converted to PDF & downloaded!", "success");
       } catch (err) {
