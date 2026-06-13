@@ -113,22 +113,18 @@ h3 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: 700; }
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.35rem;
   letter-spacing: -0.3px;
 }
-.logo-icon { font-size: 1.5rem; display: inline-flex; align-items: center; }
-.logo-icon::before {
-  content: '⚡';
-  color: var(--c-accent);
-  text-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.7);
-  animation: logo-glow 2s ease-in-out infinite alternate;
-}
-@keyframes logo-glow {
-  from { text-shadow: 0 0 4px rgba(var(--c-accent-rgb), 0.4); }
-  to { text-shadow: 0 0 14px rgba(var(--c-accent-rgb), 0.9); }
+.logo-img {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+  display: block;
 }
 .logo-text {
   background: linear-gradient(135deg, var(--c-accent), var(--c-accent2));
