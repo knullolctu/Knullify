@@ -1041,3 +1041,30 @@ select:focus {
 
 /* Selection */
 ::selection { background: rgba(var(--c-accent-rgb), 0.25); color: var(--c-text); }
+
+/* Dynamic Clear File Button */
+.dz-clear-btn {
+  display: none;
+  background: rgba(255, 80, 80, 0.12);
+  border: 1px solid rgba(255, 80, 80, 0.25);
+  color: #ff7070;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  margin-top: 10px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  transition: all var(--transition);
+  cursor: pointer;
+  z-index: 5;
+  position: relative;
+}
+.dz-clear-btn:hover {
+  background: rgba(255, 80, 80, 0.22);
+  border-color: rgba(255, 80, 80, 0.4);
+  color: #ff8585;
+  transform: translateY(-1px);
+}
+.dz-clear-btn:active {
+  transform: scale(0.97);
+}

@@ -121,6 +121,33 @@ document.addEventListener("DOMContentLoaded", function () {
     var input = document.getElementById(inputId);
     if (!dz || !input) return;
 
+    // Capture original hint text
+    var hint = dz.querySelector(".dz-hint");
+    if (hint && !dz.hasAttribute("data-original-hint")) {
+      dz.setAttribute("data-original-hint", hint.textContent);
+    }
+
+    // Append clear button if not already present
+    var clearBtn = dz.querySelector(".dz-clear-btn");
+    if (!clearBtn) {
+      clearBtn = document.createElement("button");
+      clearBtn.type = "button";
+      clearBtn.className = "dz-clear-btn";
+      clearBtn.textContent = "Remove File";
+      clearBtn.style.display = "none";
+      dz.appendChild(clearBtn);
+    }
+
+    // Bind click event (stop propagation to prevent triggering file dialogue)
+    clearBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      resetDropZone(dzId, inputId);
+      if (typeof opts.onClear === "function") {
+        opts.onClear();
+      }
+    });
+
     dz.addEventListener("dragover", function (e) {
       e.preventDefault();
       dz.classList.add("dragover");
@@ -145,6 +172,24 @@ document.addEventListener("DOMContentLoaded", function () {
     dz.classList.add("has-file");
     var hint = dz.querySelector(".dz-hint");
     if (hint) hint.textContent = "✓ Selected: " + fileName;
+    var clearBtn = dz.querySelector(".dz-clear-btn");
+    if (clearBtn) clearBtn.style.display = "inline-block";
+  }
+
+  function resetDropZone(dzId, inputId) {
+    var dz = document.getElementById(dzId);
+    if (!dz) return;
+    dz.classList.remove("has-file");
+    dz.classList.remove("dragover");
+    var hint = dz.querySelector(".dz-hint");
+    if (hint) {
+      var orig = dz.getAttribute("data-original-hint");
+      if (orig) hint.textContent = orig;
+    }
+    var clearBtn = dz.querySelector(".dz-clear-btn");
+    if (clearBtn) clearBtn.style.display = "none";
+    var input = document.getElementById(inputId);
+    if (input) input.value = "";
   }
 
   /* ==========================================================
@@ -248,6 +293,14 @@ document.addEventListener("DOMContentLoaded", function () {
         img.src = URL.createObjectURL(file);
         prevArea.appendChild(img);
       }
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("png2jpg-filename");
+        if (filenameInput) filenameInput.value = "";
+      }
     });
 
     convertBtn.addEventListener("click", async function () {
@@ -302,6 +355,14 @@ document.addEventListener("DOMContentLoaded", function () {
         var img = document.createElement("img");
         img.src = URL.createObjectURL(file);
         prevArea.appendChild(img);
+      }
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("jpg2png-filename");
+        if (filenameInput) filenameInput.value = "";
       }
     });
 
@@ -358,6 +419,15 @@ document.addEventListener("DOMContentLoaded", function () {
       var filenameInput = document.getElementById("pdf2img-filename");
       if (filenameInput) filenameInput.value = basename(file.name);
       if (prevArea) prevArea.innerHTML = "";
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("pdf2img-filename");
+        if (filenameInput) filenameInput.value = "";
+        if (progressWrap) progressWrap.hidden = true;
+      }
     });
 
     convertBtn.addEventListener("click", async function () {
@@ -437,7 +507,16 @@ document.addEventListener("DOMContentLoaded", function () {
           prevArea.appendChild(img);
         });
       }
-    }, { multiple: true });
+    }, {
+      multiple: true,
+      onClear: function () {
+        _files = [];
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("img2pdf-filename");
+        if (filenameInput) filenameInput.value = "images_to_pdf";
+      }
+    });
 
     convertBtn.addEventListener("click", async function () {
       if (!_files.length || typeof jspdf === "undefined") {
@@ -595,7 +674,18 @@ document.addEventListener("DOMContentLoaded", function () {
           prevArea.appendChild(img);
         });
       }
-    }, { multiple: true });
+    }, {
+      multiple: true,
+      onClear: function () {
+        _files = [];
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("img2txt-filename");
+        if (filenameInput) filenameInput.value = "extracted_text";
+        if (resultWrap) resultWrap.hidden = true;
+        if (resultTA) resultTA.value = "";
+      }
+    });
 
     convertBtn.addEventListener("click", async function () {
       if (!_files.length || typeof Tesseract === "undefined") {
@@ -684,6 +774,15 @@ document.addEventListener("DOMContentLoaded", function () {
       var filenameInput = document.getElementById("pdf2txt-filename");
       if (filenameInput) filenameInput.value = basename(file.name) + "_text";
       if (resultWrap) resultWrap.hidden = true;
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        var filenameInput = document.getElementById("pdf2txt-filename");
+        if (filenameInput) filenameInput.value = "";
+        if (resultWrap) resultWrap.hidden = true;
+        if (resultTA) resultTA.value = "";
+      }
     });
 
     convertBtn.addEventListener("click", async function () {
@@ -859,6 +958,19 @@ document.addEventListener("DOMContentLoaded", function () {
         thumb.src = URL.createObjectURL(file);
         prevArea.appendChild(thumb);
       }
+    }, {
+      onClear: function () {
+        _file = null;
+        _origW = 0;
+        _origH = 0;
+        if (wInput) wInput.value = "";
+        if (hInput) hInput.value = "";
+        if (infoEl) { infoEl.textContent = ""; infoEl.style.display = "none"; }
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("resize-filename");
+        if (filenameInput) filenameInput.value = "";
+      }
     });
 
     if (wInput) {
@@ -938,6 +1050,15 @@ document.addEventListener("DOMContentLoaded", function () {
         img.src = URL.createObjectURL(file);
         prevArea.appendChild(img);
       }
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("compress-filename");
+        if (filenameInput) filenameInput.value = "";
+        if (statsEl) { statsEl.textContent = ""; statsEl.hidden = true; }
+      }
     });
 
     convertBtn.addEventListener("click", async function () {
@@ -999,7 +1120,16 @@ document.addEventListener("DOMContentLoaded", function () {
           prevArea.appendChild(img);
         });
       }
-    }, { multiple: true });
+    }, {
+      multiple: true,
+      onClear: function () {
+        _files = [];
+        convertBtn.disabled = true;
+        if (prevArea) prevArea.innerHTML = "";
+        var filenameInput = document.getElementById("merge-filename");
+        if (filenameInput) filenameInput.value = "merged_image";
+      }
+    });
 
     convertBtn.addEventListener("click", async function () {
       if (_files.length < 2) return;
@@ -1100,6 +1230,15 @@ document.addEventListener("DOMContentLoaded", function () {
       convertBtn.disabled = false;
       var filenameInput = document.getElementById("pdfresize-filename");
       if (filenameInput) filenameInput.value = basename(file.name) + "_resized";
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (infoEl) { infoEl.textContent = ""; infoEl.hidden = true; }
+        var filenameInput = document.getElementById("pdfresize-filename");
+        if (filenameInput) filenameInput.value = "";
+        if (progressWrap) progressWrap.hidden = true;
+      }
     });
 
     convertBtn.addEventListener("click", async function () {
@@ -1274,7 +1413,16 @@ document.addEventListener("DOMContentLoaded", function () {
       markDropZone("dz-pdfmerge", _files.length + " PDF(s) selected");
       var filenameInput = document.getElementById("pdfmerge-filename");
       if (filenameInput && _files[0]) filenameInput.value = basename(_files[0].name);
-    }, { multiple: true });
+    }, {
+      multiple: true,
+      onClear: function () {
+        _files = [];
+        renderList();
+        convertBtn.disabled = true;
+        var filenameInput = document.getElementById("pdfmerge-filename");
+        if (filenameInput) filenameInput.value = "merged";
+      }
+    });
 
     async function buildMergedPdf(allDocs, quality, progressCb) {
       var { jsPDF } = jspdf;
@@ -1427,6 +1575,15 @@ document.addEventListener("DOMContentLoaded", function () {
       convertBtn.disabled = false;
       var filenameInput = document.getElementById("pdfcompress-filename");
       if (filenameInput) filenameInput.value = basename(file.name) + "_compressed";
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (infoEl) { infoEl.textContent = ""; infoEl.hidden = true; }
+        var filenameInput = document.getElementById("pdfcompress-filename");
+        if (filenameInput) filenameInput.value = "";
+        if (progressWrap) progressWrap.hidden = true;
+      }
     });
 
     /* Render all pages at given JPEG quality — dimensions PRESERVED */
@@ -1568,6 +1725,15 @@ document.addEventListener("DOMContentLoaded", function () {
       convertBtn.disabled = false;
       var filenameInput = document.getElementById("docx2pdf-filename");
       if (filenameInput) filenameInput.value = basename(file.name);
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (infoEl) { infoEl.textContent = ""; infoEl.hidden = true; }
+        var filenameInput = document.getElementById("docx2pdf-filename");
+        if (filenameInput) filenameInput.value = "";
+        if (progressWrap) progressWrap.hidden = true;
+      }
     });
 
     convertBtn.addEventListener("click", async function () {
