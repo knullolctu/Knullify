@@ -2125,6 +2125,479 @@ document.addEventListener("DOMContentLoaded", function () {
   })();
 
   /* ==========================================================
+     16. Excel / CSV / JSON Converter
+     ========================================================== */
+  (function () {
+    var _file        = null;
+    var convertBtn   = document.getElementById("btn-spreadsheet");
+    var formatSelect = document.getElementById("spreadsheet-format");
+    var labelEl      = document.getElementById("lbl-spreadsheet-filename");
+    var filenameInp  = document.getElementById("spreadsheet-filename");
+    var prevArea     = document.getElementById("prev-spreadsheet");
+
+    if (!convertBtn) return;
+
+    function updateLabelAndButton() {
+      if (!convertBtn) return;
+      var format = formatSelect ? formatSelect.value : "csv";
+      if (format === "xlsx") {
+        convertBtn.textContent = "Convert & Download Excel";
+        if (labelEl) labelEl.textContent = "Output Excel Filename";
+        if (filenameInp && (filenameInp.value === "spreadsheet_converted" || filenameInp.value === "spreadsheet_converted.csv" || filenameInp.value === "spreadsheet_converted.json" || filenameInp.value === "spreadsheet_converted.xlsx")) {
+          filenameInp.value = "spreadsheet_converted";
+        }
+      } else if (format === "json") {
+        convertBtn.textContent = "Convert & Download JSON";
+        if (labelEl) labelEl.textContent = "Output JSON Filename";
+        if (filenameInp && (filenameInp.value === "spreadsheet_converted" || filenameInp.value === "spreadsheet_converted.csv" || filenameInp.value === "spreadsheet_converted.json" || filenameInp.value === "spreadsheet_converted.xlsx")) {
+          filenameInp.value = "spreadsheet_converted";
+        }
+      } else {
+        convertBtn.textContent = "Convert & Download CSV";
+        if (labelEl) labelEl.textContent = "Output CSV Filename";
+        if (filenameInp && (filenameInp.value === "spreadsheet_converted" || filenameInp.value === "spreadsheet_converted.csv" || filenameInp.value === "spreadsheet_converted.json" || filenameInp.value === "spreadsheet_converted.xlsx")) {
+          filenameInp.value = "spreadsheet_converted";
+        }
+      }
+    }
+
+    if (formatSelect) {
+      formatSelect.addEventListener("change", updateLabelAndButton);
+    }
+
+    setupDropZone("dz-spreadsheet", "file-spreadsheet", function (file) {
+      var name = file.name.toLowerCase();
+      var ok = name.endsWith(".xlsx") || name.endsWith(".xls") || name.endsWith(".csv") || name.endsWith(".json") ||
+               file.type === "text/csv" || file.type === "application/json" ||
+               file.type.includes("spreadsheetml") || file.type.includes("ms-excel");
+      if (!ok) {
+        showToast("Please select a valid spreadsheet file (.xlsx, .xls, .csv, .json).", "error");
+        return;
+      }
+      _file = file;
+      markDropZone("dz-spreadsheet", file.name);
+      convertBtn.disabled = false;
+      if (filenameInp) {
+        filenameInp.value = basename(file.name) + "_converted";
+      }
+      updateLabelAndButton();
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (filenameInp) filenameInp.value = "";
+        if (prevArea) prevArea.innerHTML = "";
+      }
+    });
+
+    convertBtn.addEventListener("click", async function () {
+      if (!_file) return;
+      if (typeof XLSX === "undefined") {
+        showToast("SheetJS library not loaded. Check internet connection.", "error"); return;
+      }
+      var outFmt = formatSelect ? formatSelect.value : "csv";
+      var outName = getOutputFilename("spreadsheet-filename", outFmt);
+      if (!outName) return;
+
+      try {
+        convertBtn.disabled = true;
+        convertBtn.textContent = "Converting...";
+
+        var inName = _file.name.toLowerCase();
+        var data = await _file.arrayBuffer();
+        var workbook = null;
+        var sheetName = "";
+        var sheet = null;
+
+        // Parse input file
+        if (inName.endsWith(".xlsx") || inName.endsWith(".xls")) {
+          workbook = XLSX.read(new Uint8Array(data), { type: "array" });
+        } else if (inName.endsWith(".csv")) {
+          var decoder = new TextDecoder("utf-8");
+          var csvText = decoder.decode(data);
+          workbook = XLSX.read(csvText, { type: "string" });
+        } else if (inName.endsWith(".json")) {
+          var decoder = new TextDecoder("utf-8");
+          var jsonText = decoder.decode(data);
+          var jsonObj = JSON.parse(jsonText);
+          var arr = Array.isArray(jsonObj) ? jsonObj : [jsonObj];
+          var ws = XLSX.utils.json_to_sheet(arr);
+          workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, ws, "Sheet1");
+        } else {
+          throw new Error("Unsupported input format");
+        }
+
+        // Get first sheet
+        sheetName = workbook.SheetNames[0];
+        sheet = workbook.Sheets[sheetName];
+
+        // Output Generation
+        var outBlob = null;
+        if (outFmt === "csv") {
+          var csvContent = XLSX.utils.sheet_to_csv(sheet);
+          outBlob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        } else if (outFmt === "json") {
+          var jsonArr = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+          var jsonStr = JSON.stringify(jsonArr, null, 2);
+          outBlob = new Blob([jsonStr], { type: "application/json;charset=utf-8;" });
+        } else if (outFmt === "xlsx") {
+          var wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+          outBlob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        }
+
+        triggerDownload(URL.createObjectURL(outBlob), outName, true);
+        showToast("Spreadsheet converted & downloaded!", "success");
+      } catch (err) {
+        showToast("Conversion failed: " + err.message, "error");
+        console.error(err);
+      } finally {
+        convertBtn.disabled = false;
+        updateLabelAndButton();
+      }
+    });
+  })();
+
+  /* ==========================================================
+     17. SVG to PNG / JPG Converter
+     ========================================================== */
+  (function () {
+    var _file        = null;
+    var convertBtn   = document.getElementById("btn-svg2img");
+    var formatSelect = document.getElementById("svg2img-format");
+    var scaleSelect  = document.getElementById("svg2img-scale");
+    var bgInput      = document.getElementById("bg-svg2img");
+    var useBgChk     = document.getElementById("svg2img-usebg");
+    var filenameInp  = document.getElementById("svg2img-filename");
+    var prevArea     = document.getElementById("prev-svg2img");
+
+    if (!convertBtn) return;
+
+    function updateConvertBtnLabel() {
+      if (!convertBtn) return;
+      var format = formatSelect ? formatSelect.value : "png";
+      convertBtn.textContent = format === "jpeg" ? "Convert & Download JPG" : "Convert & Download PNG";
+    }
+
+    if (formatSelect) {
+      formatSelect.addEventListener("change", updateConvertBtnLabel);
+    }
+
+    setupDropZone("dz-svg2img", "file-svg2img", function (file) {
+      var name = file.name.toLowerCase();
+      var ok = name.endsWith(".svg") || file.type === "image/svg+xml";
+      if (!ok) {
+        showToast("Please select a valid SVG file.", "error"); return;
+      }
+      _file = file;
+      markDropZone("dz-svg2img", file.name);
+      convertBtn.disabled = false;
+      if (filenameInp) {
+        filenameInp.value = basename(file.name);
+      }
+      if (prevArea) {
+        prevArea.innerHTML = "";
+        var img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.style.maxWidth = "200px";
+        img.style.maxHeight = "200px";
+        prevArea.appendChild(img);
+      }
+      updateConvertBtnLabel();
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (filenameInp) filenameInp.value = "";
+        if (prevArea) prevArea.innerHTML = "";
+      }
+    });
+
+    convertBtn.addEventListener("click", async function () {
+      if (!_file) return;
+      var outFmt = formatSelect ? formatSelect.value : "png";
+      var outExt = outFmt === "jpeg" ? "jpg" : "png";
+      var outName = getOutputFilename("svg2img-filename", outExt);
+      if (!outName) return;
+
+      try {
+        convertBtn.disabled = true;
+        convertBtn.textContent = "Converting...";
+
+        var svgUrl = URL.createObjectURL(_file);
+        var scale = parseFloat(scaleSelect ? scaleSelect.value : 2);
+        
+        var img = new Image();
+        img.onload = async function () {
+          var w = img.naturalWidth || img.width || 300;
+          var h = img.naturalHeight || img.height || 150;
+          
+          var canvas = document.createElement("canvas");
+          canvas.width = w * scale;
+          canvas.height = h * scale;
+          
+          var ctx = canvas.getContext("2d");
+          var applyBg = (useBgChk && useBgChk.checked) || outFmt === "jpeg";
+          if (applyBg) {
+            ctx.fillStyle = bgInput ? bgInput.value : "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          var mime = "image/" + outFmt;
+          var blob = await canvasToBlob(canvas, mime, 0.95);
+          triggerDownload(URL.createObjectURL(blob), outName, true);
+          showToast("SVG converted & downloaded!", "success");
+          URL.revokeObjectURL(svgUrl);
+          
+          convertBtn.disabled = false;
+          updateConvertBtnLabel();
+        };
+        img.onerror = function () {
+          showToast("Failed to render SVG vector data.", "error");
+          convertBtn.disabled = false;
+          updateConvertBtnLabel();
+        };
+        img.src = svgUrl;
+      } catch (err) {
+        showToast("Conversion failed: " + err.message, "error");
+        convertBtn.disabled = false;
+        updateConvertBtnLabel();
+      }
+    });
+  })();
+
+  /* ==========================================================
+     18. Audio Converter (Web Audio API + lamejs)
+     ========================================================== */
+  (function () {
+    var _file         = null;
+    var convertBtn    = document.getElementById("btn-audio");
+    var formatSelect  = document.getElementById("audio-format");
+    var bitrateSelect = document.getElementById("audio-bitrate");
+    var bitrateWrap   = document.getElementById("audio-bitrate-wrap");
+    var labelEl       = document.getElementById("lbl-audio-filename");
+    var filenameInp   = document.getElementById("audio-filename");
+    var progressWrap  = document.getElementById("audio-progress");
+
+    if (!convertBtn) return;
+
+    function updateBitrateVisibility() {
+      if (!formatSelect) return;
+      var format = formatSelect.value;
+      if (format === "wav") {
+        if (bitrateWrap) bitrateWrap.style.display = "none";
+        if (labelEl) labelEl.textContent = "Output WAV Filename";
+        if (convertBtn) convertBtn.textContent = "Convert & Download WAV";
+      } else {
+        if (bitrateWrap) bitrateWrap.style.display = "flex";
+        if (labelEl) labelEl.textContent = "Output MP3 Filename";
+        if (convertBtn) convertBtn.textContent = "Convert & Download MP3";
+      }
+    }
+
+    if (formatSelect) {
+      formatSelect.addEventListener("change", updateBitrateVisibility);
+    }
+
+    setupDropZone("dz-audio", "file-audio", function (file) {
+      _file = file;
+      markDropZone("dz-audio", file.name);
+      convertBtn.disabled = false;
+      if (filenameInp) {
+        filenameInp.value = basename(file.name);
+      }
+      updateBitrateVisibility();
+    }, {
+      onClear: function () {
+        _file = null;
+        convertBtn.disabled = true;
+        if (filenameInp) filenameInp.value = "";
+        if (progressWrap) progressWrap.hidden = true;
+      }
+    });
+
+    convertBtn.addEventListener("click", async function () {
+      if (!_file) return;
+      var outFmt = formatSelect ? formatSelect.value : "mp3";
+      var outName = getOutputFilename("audio-filename", outFmt);
+      if (!outName) return;
+
+      try {
+        convertBtn.disabled = true;
+        convertBtn.textContent = "Decoding audio...";
+        if (progressWrap) progressWrap.hidden = false;
+        setProgress("audio-fill", "audio-status", 5, "Loading file data...");
+
+        var fileData = await _file.arrayBuffer();
+        setProgress("audio-fill", "audio-status", 15, "Decoding audio track (client-side)...");
+
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var audioBuffer;
+        try {
+          audioBuffer = await audioCtx.decodeAudioData(fileData);
+        } catch (decodeErr) {
+          throw new Error("Unable to decode file. Check if the audio/video format is supported by your browser.");
+        } finally {
+          audioCtx.close();
+        }
+
+        if (outFmt === "wav") {
+          setProgress("audio-fill", "audio-status", 60, "Writing WAV RIFF header & PCM samples...");
+          var wavBlob = audioBufferToWav(audioBuffer);
+          triggerDownload(URL.createObjectURL(wavBlob), outName, true);
+          setProgress("audio-fill", "audio-status", 100, "Conversion complete!");
+          showToast("WAV audio converted & downloaded!", "success");
+          convertBtn.disabled = false;
+          updateBitrateVisibility();
+        } else {
+          var bitrate = parseInt(bitrateSelect ? bitrateSelect.value : 192);
+          setProgress("audio-fill", "audio-status", 30, "Initializing MP3 encoder...");
+          if (typeof lamejs === "undefined") {
+            throw new Error("lamejs MP3 encoder library not loaded.");
+          }
+
+          encodeMp3(audioBuffer, bitrate, function (pct) {
+            setProgress("audio-fill", "audio-status", 30 + Math.round(pct * 0.65), "Encoding MP3... " + pct + "%");
+          }, function (mp3Blob) {
+            setProgress("audio-fill", "audio-status", 100, "Conversion complete!");
+            triggerDownload(URL.createObjectURL(mp3Blob), outName, true);
+            showToast("MP3 audio converted & downloaded!", "success");
+            convertBtn.disabled = false;
+            updateBitrateVisibility();
+          }, function (encErr) {
+            showToast("MP3 encoding failed: " + encErr.message, "error");
+            convertBtn.disabled = false;
+            updateBitrateVisibility();
+          });
+        }
+      } catch (err) {
+        showToast("Audio conversion failed: " + err.message, "error");
+        console.error(err);
+        convertBtn.disabled = false;
+        updateBitrateVisibility();
+        if (progressWrap) progressWrap.hidden = true;
+      }
+    });
+
+    function audioBufferToWav(buffer) {
+      var numOfChan = buffer.numberOfChannels,
+          length = buffer.length * numOfChan * 2 + 44,
+          bufferArr = new ArrayBuffer(length),
+          view = new DataView(bufferArr),
+          channels = [], i, sample,
+          offset = 0,
+          pos = 0;
+
+      setUint32(0x46464952);
+      setUint32(length - 8);
+      setUint32(0x45564157);
+
+      setUint32(0x20746d66);
+      setUint32(16);
+      setUint16(1);
+      setUint16(numOfChan);
+      setUint32(buffer.sampleRate);
+      setUint32(buffer.sampleRate * numOfChan * 2);
+      setUint16(numOfChan * 2);
+      setUint16(16);
+
+      setUint32(0x61746164);
+      setUint32(length - pos - 4);
+
+      for (i = 0; i < buffer.numberOfChannels; i++) {
+        channels.push(buffer.getChannelData(i));
+      }
+
+      while (pos < length) {
+        for (i = 0; i < numOfChan; i++) {
+          sample = Math.max(-1, Math.min(1, channels[i][offset]));
+          sample = (sample < 0 ? sample * 0x8000 : sample * 0x7FFF);
+          view.setInt16(pos, sample, true);
+          pos += 2;
+        }
+        offset++;
+      }
+
+      return new Blob([bufferArr], { type: "audio/wav" });
+
+      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
+    }
+
+    function encodeMp3(audioBuffer, bitrate, onProgress, onComplete, onError) {
+      try {
+        var numChannels = audioBuffer.numberOfChannels;
+        var sampleRate = audioBuffer.sampleRate;
+        var mp3encoder = new lamejs.Mp3Encoder(numChannels, sampleRate, bitrate);
+        var mp3Data = [];
+
+        var channelsData = [];
+        for (var c = 0; c < numChannels; c++) {
+          channelsData.push(audioBuffer.getChannelData(c));
+        }
+
+        var totalSamples = audioBuffer.length;
+        var sampleBlockSize = 1152;
+        var offset = 0;
+
+        var leftInt16 = new Int16Array(sampleBlockSize);
+        var rightInt16 = numChannels > 1 ? new Int16Array(sampleBlockSize) : null;
+
+        function encodeNextChunk() {
+          var end = Math.min(offset + sampleBlockSize, totalSamples);
+          var blockSize = end - offset;
+          
+          if (blockSize <= 0) {
+            var mp3buf = mp3encoder.flush();
+            if (mp3buf.length > 0) {
+              mp3Data.push(new Uint8Array(mp3buf));
+            }
+            var blob = new Blob(mp3Data, { type: "audio/mp3" });
+            onComplete(blob);
+            return;
+          }
+
+          for (var i = 0; i < blockSize; i++) {
+            var sampleL = Math.max(-1, Math.min(1, channelsData[0][offset + i]));
+            leftInt16[i] = sampleL < 0 ? sampleL * 0x8000 : sampleL * 0x7FFF;
+
+            if (numChannels > 1) {
+              var sampleR = Math.max(-1, Math.min(1, channelsData[1][offset + i]));
+              rightInt16[i] = sampleR < 0 ? sampleR * 0x8000 : sampleR * 0x7FFF;
+            }
+          }
+
+          var mp3buf;
+          if (numChannels > 1) {
+            var lSlice = blockSize === sampleBlockSize ? leftInt16 : leftInt16.subarray(0, blockSize);
+            var rSlice = blockSize === sampleBlockSize ? rightInt16 : rightInt16.subarray(0, blockSize);
+            mp3buf = mp3encoder.encodeBuffer(lSlice, rSlice);
+          } else {
+            var lSlice = blockSize === sampleBlockSize ? leftInt16 : leftInt16.subarray(0, blockSize);
+            mp3buf = mp3encoder.encodeBuffer(lSlice);
+          }
+
+          if (mp3buf.length > 0) {
+            mp3Data.push(new Uint8Array(mp3buf));
+          }
+
+          offset += blockSize;
+          var progress = Math.round((offset / totalSamples) * 100);
+          onProgress(progress);
+
+          setTimeout(encodeNextChunk, 0);
+        }
+
+        encodeNextChunk();
+      } catch (err) {
+        onError(err);
+      }
+    }
+  })();
+
+  /* ==========================================================
      GLOBAL DRAG-OVER PREVENTION
      ========================================================== */
   document.addEventListener("dragover", function (e) { e.preventDefault(); });

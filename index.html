@@ -78,6 +78,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <!-- JSZip CDN (CBZ/ZIP support) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- SheetJS CDN (Excel / CSV / JSON) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- lamejs CDN (Lightweight MP3 Encoder) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -163,6 +167,9 @@
           data-tab="pdfcompress">PDF Compressor</button>
         <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-docx2pdf" data-tab="docx2pdf">DOCX →
           PDF</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-spreadsheet" data-tab="spreadsheet" title="Convert Excel, CSV, and JSON spreadsheets client-side">Excel / CSV / JSON</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-svg2img" data-tab="svg2img" title="Convert SVG vectors to PNG/JPG at any scale">SVG → PNG / JPG</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-audio" data-tab="audio" title="Extract and convert audio from videos or audio files to MP3/WAV">Audio Converter</button>
       </div>
 
       <!-- ---- PNG to JPG ---- -->
@@ -775,9 +782,125 @@
             <span id="docx2pdf-status"></span>
           </div>
           <button class="btn-convert" id="btn-docx2pdf" disabled>Convert to PDF &amp; Download</button>
+      </div>
+
+      <!-- ---- Excel / CSV / JSON ---- -->
+      <div class="tab-panel" id="tab-spreadsheet" role="tabpanel">
+        <div class="panel-card">
+          <h3>Spreadsheet Converter</h3>
+          <p class="panel-desc">Convert between Excel (.xlsx, .xls), CSV, and JSON formats client-side.</p>
+          <label class="drop-zone" id="dz-spreadsheet" for="file-spreadsheet">
+            <div class="dz-inner">
+              <div class="dz-icon">📊</div>
+              <div class="dz-text">Drop Excel, CSV, or JSON here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .xlsx, .xls, .csv, .json</div>
+            </div>
+            <input type="file" id="file-spreadsheet" accept=".xlsx,.xls,.csv,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/json" hidden />
+          </label>
+          <div class="options-row">
+            <label>Output Format:
+              <select id="spreadsheet-format" style="width: auto; min-width: 200px;">
+                <option value="xlsx">Excel (.xlsx)</option>
+                <option value="csv" selected>CSV (.csv)</option>
+                <option value="json">JSON (.json)</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="spreadsheet-filename" id="lbl-spreadsheet-filename">Output CSV Filename</label>
+            <input type="text" id="spreadsheet-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
+          <div class="preview-area" id="prev-spreadsheet"></div>
+          <button class="btn-convert" id="btn-spreadsheet" disabled>Convert &amp; Download CSV</button>
         </div>
       </div>
 
+      <!-- ---- SVG to PNG / JPG ---- -->
+      <div class="tab-panel" id="tab-svg2img" role="tabpanel">
+        <div class="panel-card">
+          <h3>SVG → PNG / JPG Converter</h3>
+          <p class="panel-desc">Convert SVG vector graphics to raster images at any scale.</p>
+          <label class="drop-zone" id="dz-svg2img" for="file-svg2img">
+            <div class="dz-inner">
+              <div class="dz-icon">📐</div>
+              <div class="dz-text">Drop SVG file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .svg</div>
+            </div>
+            <input type="file" id="file-svg2img" accept=".svg,image/svg+xml" hidden />
+          </label>
+          <div class="options-grid">
+            <label>Output Format:
+              <select id="svg2img-format" style="width: auto;">
+                <option value="png" selected>PNG (.png)</option>
+                <option value="jpeg">JPG (.jpg)</option>
+              </select>
+            </label>
+            <label>Scale (Multiplier):
+              <select id="svg2img-scale" style="width: auto;">
+                <option value="1">1x (Original Size)</option>
+                <option value="2" selected>2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+              </select>
+            </label>
+            <label>Background color (for JPG or transparent PNG):
+              <input type="color" id="bg-svg2img" value="#ffffff" class="color-input" />
+            </label>
+            <label class="checkbox-label" style="align-self:end">
+              <input type="checkbox" id="svg2img-usebg" /> Apply background color
+            </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="svg2img-filename" id="lbl-svg2img-filename">Output Filename</label>
+            <input type="text" id="svg2img-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
+          <div class="preview-area" id="prev-svg2img"></div>
+          <button class="btn-convert" id="btn-svg2img" disabled>Convert &amp; Download PNG</button>
+        </div>
+      </div>
+
+      <!-- ---- Audio Converter ---- -->
+      <div class="tab-panel" id="tab-audio" role="tabpanel">
+        <div class="panel-card">
+          <h3>Audio Converter</h3>
+          <p class="panel-desc">Extract audio from video (MP4/WebM) or convert audio (WAV, MP3, M4A) to MP3/WAV offline.</p>
+          <label class="drop-zone" id="dz-audio" for="file-audio">
+            <div class="dz-inner">
+              <div class="dz-icon">🎵</div>
+              <div class="dz-text">Drop Video/Audio file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .mp4, .webm, .wav, .mp3, .m4a, .ogg, .flac</div>
+            </div>
+            <input type="file" id="file-audio" accept="audio/*,video/*" hidden />
+          </label>
+          <div class="options-grid">
+            <label>Output Format:
+              <select id="audio-format" style="width: auto;">
+                <option value="mp3" selected>MP3 Audio (.mp3)</option>
+                <option value="wav">WAV Audio (.wav)</option>
+              </select>
+            </label>
+            <label id="audio-bitrate-wrap">MP3 Bitrate:
+              <select id="audio-bitrate" style="width: auto;">
+                <option value="128">128 kbps (Standard)</option>
+                <option value="192" selected>192 kbps (High Quality)</option>
+                <option value="256">256 kbps (Very High)</option>
+                <option value="320">320 kbps (Extreme/Archival)</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="audio-filename" id="lbl-audio-filename">Output MP3 Filename</label>
+            <input type="text" id="audio-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
+          <div id="audio-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="audio-fill"></div>
+            </div>
+            <span id="audio-status"></span>
+          </div>
+          <button class="btn-convert" id="btn-audio" disabled>Convert &amp; Download MP3</button>
+        </div>
+      </div>
 
     </div><!-- /container -->
   </section>

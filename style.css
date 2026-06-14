@@ -1240,3 +1240,35 @@ select:focus {
 .preview-remove-btn:active {
   transform: scale(0.9);
 }
+
+/* ── Mobile Layout Refinement for Tab Buttons ── */
+@media (max-width: 680px) {
+  .tab-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 0 4px;
+  }
+
+  .tab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 90px;
+    padding: 12px 8px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    text-align: center;
+    background: rgba(24, 30, 48, 0.4);
+    border: 1px solid var(--c-border);
+    transition: all var(--transition);
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--c-accent), var(--c-accent2));
+    color: #0b0e17;
+    box-shadow: 0 4px 15px rgba(var(--c-accent-rgb), 0.3);
+  }
+}
