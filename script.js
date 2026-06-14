@@ -473,6 +473,23 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
+    var formatEl = document.getElementById("pdf2img-format");
+    function updateConvertButtonLabel() {
+      if (!convertBtn) return;
+      var zipMode = formatEl ? formatEl.value : "cbz";
+      if (zipMode === "cbz") {
+        convertBtn.textContent = "Convert Pages & Download CBZ";
+      } else if (zipMode === "zip") {
+        convertBtn.textContent = "Convert Pages & Download ZIP";
+      } else {
+        convertBtn.textContent = "Convert Pages to PNG";
+      }
+    }
+    if (formatEl) {
+      formatEl.addEventListener("change", updateConvertButtonLabel);
+      updateConvertButtonLabel();
+    }
+
     setupDropZone("dz-pdf2img", "file-pdf2img", function (file) {
       if (!file || file.type !== "application/pdf") {
         showToast("Please select a PDF file.", "error"); return;
@@ -565,7 +582,7 @@ document.addEventListener("DOMContentLoaded", function () {
         showToast("PDF error: " + err.message, "error");
       } finally {
         convertBtn.disabled = false;
-        convertBtn.textContent = "Convert Pages to PNG";
+        updateConvertButtonLabel();
         if (progressWrap) progressWrap.hidden = true;
       }
     });
