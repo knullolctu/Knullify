@@ -1,4 +1,4 @@
-const CACHE_NAME = "knullify-v3";
+const CACHE_NAME = "knullify-v4";
 const ASSETS = [
   "./",
   "./index.html",

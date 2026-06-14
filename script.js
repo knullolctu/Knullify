@@ -110,6 +110,40 @@ document.addEventListener("DOMContentLoaded", function () {
     return (bytes / (1024 * 1024)).toFixed(2) + " MB";
   }
 
+  async function extractZipImages(zipFile) {
+    if (typeof JSZip === "undefined") {
+      showToast("JSZip library not loaded. Check connection.", "error");
+      return [];
+    }
+    try {
+      var zip = await JSZip.loadAsync(zipFile);
+      // Sort files alphabetically/numerically to preserve page order
+      var fileNames = Object.keys(zip.files).sort(function (a, b) {
+        return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+      });
+      var extractedImages = [];
+      for (var i = 0; i < fileNames.length; i++) {
+        var name = fileNames[i];
+        var fileEntry = zip.files[name];
+        if (fileEntry.dir) continue;
+        
+        // Match standard image extensions
+        if (/\.(jpe?g|png|webp|bmp|gif)$/i.test(name)) {
+          var blob = await fileEntry.async("blob");
+          var cleanName = name.split('/').pop();
+          var ext = cleanName.split('.').pop().toLowerCase();
+          var mimeType = "image/" + (ext === "jpg" ? "jpeg" : ext);
+          var file = new File([blob], cleanName, { type: mimeType });
+          extractedImages.push(file);
+        }
+      }
+      return extractedImages;
+    } catch (err) {
+      showToast("Failed to read CBZ/ZIP: " + err.message, "error");
+      return [];
+    }
+  }
+
   /* ==========================================================
      DROP ZONE SETUP
      ========================================================== */
@@ -470,6 +504,11 @@ document.addEventListener("DOMContentLoaded", function () {
         showToast("Output filename is required.", "error");
         return;
       }
+      var formatEl = document.getElementById("pdf2img-format");
+      var zipMode = formatEl ? formatEl.value : "cbz";
+      if ((zipMode === "cbz" || zipMode === "zip") && typeof JSZip === "undefined") {
+        showToast("JSZip library not loaded. Check your connection.", "error"); return;
+      }
       try {
         var ab    = await _file.arrayBuffer();
         var pdf   = await pdfjsLib.getDocument({ data: ab }).promise;
@@ -480,6 +519,11 @@ document.addEventListener("DOMContentLoaded", function () {
         convertBtn.textContent = "Processing...";
         if (progressWrap) progressWrap.hidden = false;
         if (prevArea) prevArea.innerHTML = "";
+
+        var zip = null;
+        if (zipMode === "cbz" || zipMode === "zip") {
+          zip = new JSZip();
+        }
 
         for (var i = 1; i <= total; i++) {
           setProgress("pdf2img-fill", "pdf2img-status",
@@ -498,10 +542,25 @@ document.addEventListener("DOMContentLoaded", function () {
             thumb.title = "Page " + i;
             prevArea.appendChild(thumb);
           }
-          triggerDownload(url, userBaseName + "_page" + i + ".png", true);
-          await new Promise(function (r) { setTimeout(r, 300); });
+          if (zip) {
+            var totalDigits = Math.max(3, String(total).length);
+            var pageNumStr = String(i).padStart(totalDigits, "0");
+            zip.file(userBaseName + "_page" + pageNumStr + ".png", blob);
+          } else {
+            triggerDownload(url, userBaseName + "_page" + i + ".png", true);
+            await new Promise(function (r) { setTimeout(r, 300); });
+          }
         }
-        showToast(total + " page(s) downloaded!", "success");
+
+        if (zip) {
+          setProgress("pdf2img-fill", "pdf2img-status", 99, "Creating archive...");
+          var archiveBlob = await zip.generateAsync({ type: "blob" });
+          var archiveUrl = URL.createObjectURL(archiveBlob);
+          var ext = zipMode === "cbz" ? "cbz" : "zip";
+          triggerDownload(archiveUrl, userBaseName + "." + ext, true);
+        }
+
+        showToast(total + " page(s) processed!", "success");
       } catch (err) {
         showToast("PDF error: " + err.message, "error");
       } finally {
@@ -557,10 +616,28 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    setupDropZone("dz-img2pdf", "file-img2pdf", function (files) {
-      var newFiles = files.filter(function (f) { return f.type.startsWith("image/"); });
-      if (!newFiles.length) { showToast("No valid images selected.", "error"); return; }
-      _files = _files.concat(newFiles);
+    setupDropZone("dz-img2pdf", "file-img2pdf", async function (files) {
+      var imageFiles = [];
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var isZip = file.name.toLowerCase().endsWith(".zip") || 
+                    file.name.toLowerCase().endsWith(".cbz") || 
+                    file.type === "application/zip" || 
+                    file.type === "application/x-zip-compressed" || 
+                    file.type === "application/x-cbz";
+        if (isZip) {
+          showToast("Extracting images from archive...", "info");
+          var extracted = await extractZipImages(file);
+          if (extracted.length) {
+            imageFiles = imageFiles.concat(extracted);
+            showToast("Extracted " + extracted.length + " image(s) from " + file.name, "success");
+          }
+        } else if (file.type.startsWith("image/")) {
+          imageFiles.push(file);
+        }
+      }
+      if (!imageFiles.length) { showToast("No valid images selected.", "error"); return; }
+      _files = _files.concat(imageFiles);
       var filenameInput = document.getElementById("img2pdf-filename");
       if (filenameInput && _files[0] && (!filenameInput.value || filenameInput.value === "images_to_pdf")) {
         filenameInput.value = basename(_files[0].name);

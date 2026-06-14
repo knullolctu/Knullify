@@ -76,6 +76,8 @@
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <!-- Mammoth.js CDN (DOCX parsing) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <!-- JSZip CDN (CBZ/ZIP support) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -234,6 +236,13 @@
             <label>Scale (DPI): <span id="scale-pdf2img-val">2x</span>
               <input type="range" id="scale-pdf2img" min="1" max="4" value="2" step="0.5" class="slider" />
             </label>
+            <label>Output Format:
+              <select id="pdf2img-format" style="width: auto; min-width: 250px;">
+                <option value="cbz" selected>Single Comic Book Archive (.cbz)</option>
+                <option value="zip">Single ZIP Archive (.zip)</option>
+                <option value="individual">Individual Images (.png)</option>
+              </select>
+            </label>
           </div>
           <div class="form-group filename-option-group" style="margin-top: 16px;">
             <label for="pdf2img-filename">Output Base Filename (for page images)</label>
@@ -258,10 +267,10 @@
           <label class="drop-zone" id="dz-img2pdf" for="file-img2pdf">
             <div class="dz-inner">
               <div class="dz-icon">🖼️</div>
-              <div class="dz-text">Drop images here or <span>browse</span></div>
-              <div class="dz-hint">Supports: .jpg, .jpeg, .png, .webp (multiple files)</div>
+              <div class="dz-text">Drop images or CBZ/ZIP archives here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .jpg, .jpeg, .png, .webp, .cbz, .zip (multiple files)</div>
             </div>
-            <input type="file" id="file-img2pdf" accept="image/*" multiple hidden />
+            <input type="file" id="file-img2pdf" accept="image/*,.cbz,.zip" multiple hidden />
           </label>
           <div class="form-group filename-option-group" style="margin-top: 16px;">
             <label for="img2pdf-filename">Output PDF Filename</label>
