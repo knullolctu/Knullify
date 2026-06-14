@@ -64,8 +64,13 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- UI Fonts -->
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet" />
+  <!-- Text-to-Image Extra Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Raleway:wght@400;700&family=Oswald:wght@400;700&family=Ubuntu:wght@400;700&family=Nunito:wght@400;700&family=Playfair+Display:wght@400;700&family=Merriweather:wght@400;700&family=Libre+Baskerville:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Fira+Code:wght@400;700&family=Dancing+Script:wght@400;700&family=Pacifico&family=Lobster&display=swap"
     rel="stylesheet" />
 
   <!-- PDF.js CDN -->
@@ -294,19 +299,54 @@
       <div class="tab-panel" id="tab-txt2img" role="tabpanel">
         <div class="panel-card">
           <h3>Text → Image Converter</h3>
-          <p class="panel-desc">Render text on a canvas and download as PNG.</p>
+          <p class="panel-desc">Render styled text on a canvas and download as PNG, JPG, or WebP.</p>
           <div class="form-group">
             <label for="txt2img-text">Your Text</label>
             <textarea id="txt2img-text" rows="6" placeholder="Type or paste your text here..."></textarea>
           </div>
           <div class="options-grid">
+            <label>Output Format
+              <select id="txt2img-format">
+                <option value="png" selected>PNG (.png)</option>
+                <option value="jpeg">JPG (.jpg)</option>
+                <option value="webp">WebP (.webp)</option>
+              </select>
+            </label>
             <label>Font Family
               <select id="txt2img-font">
-                <option value="Syne, sans-serif">Syne (Modern)</option>
-                <option value="Georgia, serif">Georgia (Serif)</option>
-                <option value="'Courier New', monospace">Courier New (Mono)</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="'Times New Roman', serif">Times New Roman</option>
+                <optgroup label="── Sans-Serif ──">
+                  <option value="Roboto, sans-serif">Roboto</option>
+                  <option value="Lato, sans-serif">Lato</option>
+                  <option value="Montserrat, sans-serif">Montserrat</option>
+                  <option value="Raleway, sans-serif">Raleway</option>
+                  <option value="Nunito, sans-serif">Nunito</option>
+                  <option value="Ubuntu, sans-serif">Ubuntu</option>
+                  <option value="Syne, sans-serif">Syne (App Font)</option>
+                  <option value="Arial, sans-serif">Arial</option>
+                  <option value="'Helvetica Neue', Helvetica, sans-serif">Helvetica</option>
+                  <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                  <option value="Verdana, sans-serif">Verdana</option>
+                </optgroup>
+                <optgroup label="── Serif ──">
+                  <option value="'Playfair Display', serif">Playfair Display</option>
+                  <option value="Merriweather, serif">Merriweather</option>
+                  <option value="'Libre Baskerville', serif">Libre Baskerville</option>
+                  <option value="Georgia, serif" selected>Georgia</option>
+                  <option value="'Times New Roman', serif">Times New Roman</option>
+                </optgroup>
+                <optgroup label="── Display ──">
+                  <option value="Oswald, sans-serif">Oswald</option>
+                  <option value="Lobster, cursive">Lobster</option>
+                  <option value="Pacifico, cursive">Pacifico</option>
+                </optgroup>
+                <optgroup label="── Handwriting ──">
+                  <option value="'Dancing Script', cursive">Dancing Script</option>
+                </optgroup>
+                <optgroup label="── Monospace ──">
+                  <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                  <option value="'Fira Code', monospace">Fira Code</option>
+                  <option value="'Courier New', monospace">Courier New</option>
+                </optgroup>
               </select>
             </label>
             <label>Font Size (px)
@@ -323,6 +363,9 @@
             </label>
             <label>Padding (px)
               <input type="number" id="txt2img-pad" value="40" min="0" max="200" />
+            </label>
+            <label>JPG Quality (if JPG)
+              <input type="range" id="txt2img-quality" min="50" max="100" value="95" class="slider" />
             </label>
           </div>
           <div class="form-group filename-option-group" style="margin-top: 16px;">
@@ -342,7 +385,7 @@
       <div class="tab-panel" id="tab-img2txt" role="tabpanel">
         <div class="panel-card">
           <h3>Image → Text (OCR)</h3>
-          <p class="panel-desc">Extract text from images using Tesseract OCR — all in your browser.</p>
+          <p class="panel-desc">Extract text from images using Tesseract OCR. Export as Plain Text, Markdown, HTML, or PDF — all in your browser.</p>
           <label class="drop-zone" id="dz-img2txt" for="file-img2txt">
             <div class="dz-inner">
               <div class="dz-icon">🔍</div>
@@ -354,11 +397,56 @@
           <div class="options-row">
             <label>Language:
               <select id="img2txt-lang">
-                <option value="eng">English</option>
-                <option value="hin">Hindi</option>
-                <option value="fra">French</option>
-                <option value="deu">German</option>
-                <option value="spa">Spanish</option>
+                <optgroup label="── Common ──">
+                  <option value="eng" selected>English</option>
+                  <option value="fra">French</option>
+                  <option value="deu">German</option>
+                  <option value="spa">Spanish</option>
+                  <option value="por">Portuguese</option>
+                  <option value="ita">Italian</option>
+                  <option value="nld">Dutch</option>
+                  <option value="pol">Polish</option>
+                  <option value="tur">Turkish</option>
+                  <option value="ron">Romanian</option>
+                </optgroup>
+                <optgroup label="── Asian ──">
+                  <option value="chi_sim">Chinese (Simplified)</option>
+                  <option value="chi_tra">Chinese (Traditional)</option>
+                  <option value="jpn">Japanese</option>
+                  <option value="kor">Korean</option>
+                  <option value="hin">Hindi</option>
+                  <option value="tha">Thai</option>
+                  <option value="vie">Vietnamese</option>
+                  <option value="ind">Indonesian</option>
+                  <option value="msa">Malay</option>
+                </optgroup>
+                <optgroup label="── Middle East / Cyrillic ──">
+                  <option value="ara">Arabic</option>
+                  <option value="rus">Russian</option>
+                  <option value="ukr">Ukrainian</option>
+                  <option value="heb">Hebrew</option>
+                  <option value="fas">Persian (Farsi)</option>
+                </optgroup>
+                <optgroup label="── Other ──">
+                  <option value="swe">Swedish</option>
+                  <option value="nor">Norwegian</option>
+                  <option value="dan">Danish</option>
+                  <option value="fin">Finnish</option>
+                  <option value="ces">Czech</option>
+                  <option value="slk">Slovak</option>
+                  <option value="hun">Hungarian</option>
+                  <option value="hrv">Croatian</option>
+                  <option value="cat">Catalan</option>
+                  <option value="lat">Latin</option>
+                </optgroup>
+              </select>
+            </label>
+            <label>Output Format:
+              <select id="img2txt-format">
+                <option value="txt" selected>Plain Text (.txt)</option>
+                <option value="md">Markdown (.md)</option>
+                <option value="html">HTML (.html)</option>
+                <option value="pdf">PDF Document (.pdf)</option>
               </select>
             </label>
           </div>

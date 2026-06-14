@@ -786,11 +786,26 @@ document.addEventListener("DOMContentLoaded", function () {
     var bgEl       = document.getElementById("txt2img-bg");
     var canvasWEl  = document.getElementById("txt2img-w");
     var paddingEl  = document.getElementById("txt2img-pad");
+    var formatSel  = document.getElementById("txt2img-format");
+    var qualityEl  = document.getElementById("txt2img-quality");
     var prevArea   = document.getElementById("prev-txt2img");
     var btnPrev    = document.getElementById("btn-txt2img-preview");
     var btnDl      = document.getElementById("btn-txt2img-dl");
 
-    function renderCanvas() {
+    function getFormat() { return formatSel ? formatSel.value : "png"; }
+    function getExt(fmt) { return fmt === "jpeg" ? "jpg" : fmt; }
+
+    function updateDownloadLabel() {
+      if (!btnDl) return;
+      var fmt = getFormat();
+      var labels = { png: "Download PNG", jpeg: "Download JPG", webp: "Download WebP" };
+      btnDl.textContent = labels[fmt] || "Download";
+    }
+
+    if (formatSel) formatSel.addEventListener("change", updateDownloadLabel);
+    updateDownloadLabel();
+
+    async function renderCanvas() {
       var text    = textarea ? textarea.value : "";
       var font    = fontSel  ? fontSel.value  : "sans-serif";
       var size    = parseInt(fontSizeEl ? fontSizeEl.value : 28) || 28;
@@ -798,6 +813,14 @@ document.addEventListener("DOMContentLoaded", function () {
       var bg      = bgEl     ? bgEl.value     : "#ffffff";
       var width   = Math.min(parseInt(canvasWEl ? canvasWEl.value : 800) || 800, 4000);
       var pad     = parseInt(paddingEl ? paddingEl.value : 40) || 40;
+
+      /* --- Ensure the font is activated in the browser before drawing --- */
+      /* This is what makes Google Fonts work on canvas even when offline   */
+      if (document.fonts && document.fonts.load) {
+        try {
+          await document.fonts.load(size + "px " + font);
+        } catch (e) { /* ignore — fall back to whatever the browser has */ }
+      }
 
       var canvas  = document.createElement("canvas");
       var ctx     = canvas.getContext("2d");
@@ -834,12 +857,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (btnPrev) {
-      btnPrev.addEventListener("click", function () {
-        var canvas = renderCanvas();
-        if (prevArea) {
-          prevArea.innerHTML = "";
-          canvas.style.maxWidth = "100%";
-          prevArea.appendChild(canvas);
+      btnPrev.addEventListener("click", async function () {
+        if (!textarea || !textarea.value.trim()) {
+          showToast("Please enter some text first.", "error"); return;
+        }
+        var origText = btnPrev.textContent;
+        btnPrev.textContent = "Loading font...";
+        btnPrev.disabled = true;
+        try {
+          var canvas = await renderCanvas();
+          if (prevArea) {
+            prevArea.innerHTML = "";
+            canvas.style.maxWidth = "100%";
+            prevArea.appendChild(canvas);
+          }
+        } finally {
+          btnPrev.textContent = origText;
+          btnPrev.disabled = false;
         }
       });
     }
@@ -849,15 +883,28 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!textarea || !textarea.value.trim()) {
           showToast("Please enter some text first.", "error"); return;
         }
-        var outName = getOutputFilename("txt2img-filename", "png");
+        var fmt     = getFormat();
+        var ext     = getExt(fmt);
+        var mime    = "image/" + fmt;
+        var quality = parseFloat(qualityEl ? qualityEl.value / 100 : 0.95);
+        var outName = getOutputFilename("txt2img-filename", ext);
         if (!outName) return;
-        var canvas = renderCanvas();
-        var blob   = await canvasToBlob(canvas, "image/png");
-        triggerDownload(URL.createObjectURL(blob), outName, true);
-        showToast("Image downloaded!", "success");
+        btnDl.disabled = true;
+        var origText = btnDl.textContent;
+        btnDl.textContent = "Rendering...";
+        try {
+          var canvas = await renderCanvas();
+          var blob   = await canvasToBlob(canvas, mime, fmt === "jpeg" ? quality : undefined);
+          triggerDownload(URL.createObjectURL(blob), outName, true);
+          showToast(ext.toUpperCase() + " downloaded!", "success");
+        } finally {
+          btnDl.disabled = false;
+          updateDownloadLabel();
+        }
       });
     }
   })();
+
 
   /* ==========================================================
      6. Image -> Text (OCR — Tesseract.js)
@@ -866,6 +913,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var _files       = [];
     var convertBtn   = document.getElementById("btn-img2txt");
     var langSel      = document.getElementById("img2txt-lang");
+    var formatSel    = document.getElementById("img2txt-format");
     var prevArea     = document.getElementById("prev-img2txt");
     var progressWrap = document.getElementById("ocr-progress");
     var resultWrap   = document.getElementById("ocr-result-wrap");
@@ -874,6 +922,15 @@ document.addEventListener("DOMContentLoaded", function () {
     var btnDl        = document.getElementById("btn-dl-ocr");
 
     if (!convertBtn) return;
+
+    function getFormat() { return formatSel ? formatSel.value : "txt"; }
+
+    var fmtLabels = { txt: "Download .txt", md: "Download .md", html: "Download .html", pdf: "Download PDF" };
+    function updateDlLabel() {
+      if (btnDl) btnDl.textContent = fmtLabels[getFormat()] || "Download";
+    }
+    if (formatSel) formatSel.addEventListener("change", updateDlLabel);
+    updateDlLabel();
 
     function renderPreviews() {
       if (!prevArea) return;
@@ -951,7 +1008,7 @@ document.addEventListener("DOMContentLoaded", function () {
         for (var i = 0; i < total; i++) {
           var file = _files[i];
           var prefix = "Image " + (i + 1) + "/" + total + " (" + file.name + ")";
-          
+
           var result = await Tesseract.recognize(file, lang, {
             logger: function (m) {
               if (m.status === "recognizing text") {
@@ -964,11 +1021,12 @@ document.addEventListener("DOMContentLoaded", function () {
           });
 
           if (combinedText) combinedText += "\n\n";
-          combinedText += "=== " + file.name + " ===\n" + result.data.text;
+          combinedText += (total > 1 ? "=== " + file.name + " ===\n" : "") + result.data.text;
         }
 
         if (resultTA) resultTA.value = combinedText;
         if (resultWrap) resultWrap.hidden = false;
+        updateDlLabel();
         showToast("Text extracted!", "success");
       } catch (err) {
         showToast("OCR failed: " + err.message, "error");
@@ -985,17 +1043,82 @@ document.addEventListener("DOMContentLoaded", function () {
         showToast("Copied to clipboard!", "info");
       });
     }
+
     if (btnDl) {
       btnDl.addEventListener("click", function () {
-        if (!resultTA) return;
-        var outName = getOutputFilename("img2txt-filename", "txt");
-        if (!outName) return;
-        var blob = new Blob([resultTA.value], { type: "text/plain" });
-        triggerDownload(URL.createObjectURL(blob), outName, true);
-        showToast("Text file downloaded!", "success");
+        if (!resultTA || !resultTA.value) return;
+        var fmt     = getFormat();
+        var rawText = resultTA.value;
+        var filenameEl = document.getElementById("img2txt-filename");
+        var baseName   = filenameEl ? filenameEl.value.trim() || "extracted_text" : "extracted_text";
+        // Strip any accidental extension off baseName
+        baseName = baseName.replace(/\.(txt|md|html|pdf)$/i, "");
+
+        if (fmt === "txt") {
+          var blob = new Blob([rawText], { type: "text/plain" });
+          triggerDownload(URL.createObjectURL(blob), baseName + ".txt", true);
+          showToast("Text file downloaded!", "success");
+
+        } else if (fmt === "md") {
+          // Wrap each image section as a Markdown heading
+          var md = rawText.replace(/^=== (.+) ===/gm, "## $1");
+          var blob = new Blob([md], { type: "text/markdown" });
+          triggerDownload(URL.createObjectURL(blob), baseName + ".md", true);
+          showToast("Markdown file downloaded!", "success");
+
+        } else if (fmt === "html") {
+          // Full HTML page with pre-formatted text
+          var escaped = rawText
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+          var htmlContent = [
+            "<!DOCTYPE html>",
+            "<html lang=\"en\">",
+            "<head><meta charset=\"UTF-8\" /><title>" + baseName + "</title>",
+            "<style>body{font-family:sans-serif;max-width:860px;margin:40px auto;padding:0 20px;line-height:1.7}pre{white-space:pre-wrap;word-break:break-word;background:#f4f4f4;padding:20px;border-radius:8px}</style>",
+            "</head><body>",
+            "<h1>" + baseName + "</h1>",
+            "<pre>" + escaped + "</pre>",
+            "</body></html>"
+          ].join("\n");
+          var blob = new Blob([htmlContent], { type: "text/html" });
+          triggerDownload(URL.createObjectURL(blob), baseName + ".html", true);
+          showToast("HTML file downloaded!", "success");
+
+        } else if (fmt === "pdf") {
+          if (typeof jspdf === "undefined" && typeof window.jspdf === "undefined") {
+            showToast("jsPDF not loaded. Check connection.", "error"); return;
+          }
+          var jsPDF = (window.jspdf && window.jspdf.jsPDF) || jspdf.jsPDF;
+          var doc = new jsPDF({ unit: "pt", format: "a4" });
+          var margin = 40;
+          var pageW  = doc.internal.pageSize.getWidth();
+          var pageH  = doc.internal.pageSize.getHeight();
+          var maxW   = pageW - margin * 2;
+          var fontSize = 11;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(fontSize);
+          var lineHeight = fontSize * 1.5;
+          var y = margin;
+
+          rawText.split("\n").forEach(function (rawLine) {
+            var wrapped = doc.splitTextToSize(rawLine || " ", maxW);
+            wrapped.forEach(function (wl) {
+              if (y + lineHeight > pageH - margin) {
+                doc.addPage(); y = margin;
+              }
+              doc.text(wl, margin, y);
+              y += lineHeight;
+            });
+          });
+          doc.save(baseName + ".pdf");
+          showToast("PDF downloaded!", "success");
+        }
       });
     }
   })();
+
 
   /* ==========================================================
      7. PDF -> Text (PDF.js)
