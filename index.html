@@ -270,8 +270,17 @@
             </div>
             <input type="file" id="file-img2pdf" accept="image/*,.cbz,.zip" multiple hidden />
           </label>
+          <div class="options-row" style="margin-top: 16px;">
+            <label>Output Format:
+              <select id="img2pdf-format" style="width: auto; min-width: 250px;">
+                <option value="pdf" selected>PDF Document (.pdf)</option>
+                <option value="cbz">Comic Book Archive (.cbz)</option>
+                <option value="zip">ZIP Archive (.zip)</option>
+              </select>
+            </label>
+          </div>
           <div class="form-group filename-option-group" style="margin-top: 16px;">
-            <label for="img2pdf-filename">Output PDF Filename</label>
+            <label for="img2pdf-filename" id="lbl-img2pdf-filename">Output PDF Filename</label>
             <input type="text" id="img2pdf-filename" placeholder="Enter output filename (without extension)"
               value="images_to_pdf" required />
           </div>

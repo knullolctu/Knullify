@@ -598,6 +598,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!convertBtn) return;
 
+    var formatEl = document.getElementById("img2pdf-format");
+    var labelEl = document.getElementById("lbl-img2pdf-filename");
+    var filenameInput = document.getElementById("img2pdf-filename");
+
+    function updateConvertButtonLabel() {
+      if (!convertBtn) return;
+      var zipMode = formatEl ? formatEl.value : "pdf";
+      if (zipMode === "cbz") {
+        convertBtn.textContent = "Compile to CBZ & Download";
+        if (labelEl) labelEl.textContent = "Output CBZ Filename";
+        if (filenameInput && (filenameInput.value === "images_to_pdf" || filenameInput.value === "images_to_zip" || filenameInput.value === "images_to_cbz")) {
+          filenameInput.value = "images_to_cbz";
+        }
+      } else if (zipMode === "zip") {
+        convertBtn.textContent = "Compile to ZIP & Download";
+        if (labelEl) labelEl.textContent = "Output ZIP Filename";
+        if (filenameInput && (filenameInput.value === "images_to_pdf" || filenameInput.value === "images_to_zip" || filenameInput.value === "images_to_cbz")) {
+          filenameInput.value = "images_to_zip";
+        }
+      } else {
+        convertBtn.textContent = "Convert to PDF & Download";
+        if (labelEl) labelEl.textContent = "Output PDF Filename";
+        if (filenameInput && (filenameInput.value === "images_to_pdf" || filenameInput.value === "images_to_zip" || filenameInput.value === "images_to_cbz")) {
+          filenameInput.value = "images_to_pdf";
+        }
+      }
+    }
+
+    if (formatEl) {
+      formatEl.addEventListener("change", updateConvertButtonLabel);
+      updateConvertButtonLabel();
+    }
+
     function renderPreviews() {
       if (!prevArea) return;
       prevArea.innerHTML = "";
@@ -666,13 +699,48 @@ document.addEventListener("DOMContentLoaded", function () {
         _files = [];
         convertBtn.disabled = true;
         if (prevArea) prevArea.innerHTML = "";
-        var filenameInput = document.getElementById("img2pdf-filename");
-        if (filenameInput) filenameInput.value = "images_to_pdf";
+        if (filenameInput) {
+          var zipMode = formatEl ? formatEl.value : "pdf";
+          filenameInput.value = zipMode === "cbz" ? "images_to_cbz" : (zipMode === "zip" ? "images_to_zip" : "images_to_pdf");
+        }
       }
     });
 
     convertBtn.addEventListener("click", async function () {
-      if (!_files.length || typeof jspdf === "undefined") {
+      if (!_files.length) return;
+      var zipMode = formatEl ? formatEl.value : "pdf";
+      if (zipMode === "cbz" || zipMode === "zip") {
+        if (typeof JSZip === "undefined") {
+          showToast("JSZip library not loaded. Check your connection.", "error"); return;
+        }
+        var ext = zipMode;
+        var cleanFilename = getOutputFilename("img2pdf-filename", ext);
+        if (!cleanFilename) return;
+        try {
+          convertBtn.disabled = true;
+          convertBtn.textContent = "Creating Archive...";
+          var zip = new JSZip();
+          for (var i = 0; i < _files.length; i++) {
+            var f = _files[i];
+            var totalDigits = Math.max(3, String(_files.length).length);
+            var pageNumStr = String(i + 1).padStart(totalDigits, "0");
+            var fileExt = f.name.split('.').pop() || "png";
+            zip.file("page_" + pageNumStr + "." + fileExt, f);
+          }
+          var archiveBlob = await zip.generateAsync({ type: "blob" });
+          var archiveUrl = URL.createObjectURL(archiveBlob);
+          triggerDownload(archiveUrl, cleanFilename, true);
+          showToast(ext.toUpperCase() + " downloaded!", "success");
+        } catch (err) {
+          showToast("Archive generation failed: " + err.message, "error");
+        } finally {
+          convertBtn.disabled = false;
+          updateConvertButtonLabel();
+        }
+        return;
+      }
+
+      if (typeof jspdf === "undefined") {
         showToast("jsPDF not loaded. Check your connection.", "error"); return;
       }
       var userFilename = getOutputFilename("img2pdf-filename", "pdf");
@@ -702,7 +770,7 @@ document.addEventListener("DOMContentLoaded", function () {
         showToast("PDF generation failed: " + err.message, "error");
       } finally {
         convertBtn.disabled = false;
-        convertBtn.textContent = "Convert to PDF & Download";
+        updateConvertButtonLabel();
       }
     });
   })();
