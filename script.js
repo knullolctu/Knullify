@@ -2517,14 +2517,15 @@ document.addEventListener("DOMContentLoaded", function () {
         function updateBitrateVisibility() {
           if (!formatSelect) return;
           var format = formatSelect.value;
+          var formatLabel = String(format || "audio").toUpperCase();
           if (format === "wav") {
             if (bitrateWrap) bitrateWrap.style.display = "none";
             if (labelEl) labelEl.textContent = "Output WAV Filename";
             if (convertBtn) convertBtn.textContent = "Convert & Download WAV";
           } else {
             if (bitrateWrap) bitrateWrap.style.display = "flex";
-            if (labelEl) labelEl.textContent = "Output Music Filename";
-            if (convertBtn) convertBtn.textContent = "Convert & Download Music";
+            if (labelEl) labelEl.textContent = "Output " + formatLabel + " Filename";
+            if (convertBtn) convertBtn.textContent = "Convert & Download " + formatLabel;
           }
         }
 
@@ -2592,7 +2593,7 @@ document.addEventListener("DOMContentLoaded", function () {
               showToast(config.wavSuccessMessage, "success");
               convertBtn.disabled = false;
               updateBitrateVisibility();
-            } else {
+            } else if (outFmt === "mp3") {
               var bitrate = parseInt(bitrateSelect ? bitrateSelect.value : 192);
               setProgress(config.progressFillId, config.progressStatusId, 30, "Initializing MP3 encoder...");
               if (typeof lamejs === "undefined") {
@@ -2609,6 +2610,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateBitrateVisibility();
               }, function (encErr) {
                 showToast("MP3 encoding failed: " + encErr.message, "error");
+                convertBtn.disabled = false;
+                updateBitrateVisibility();
+              });
+            } else {
+              var bitrate = parseInt(bitrateSelect ? bitrateSelect.value : 192);
+              var mimeCandidates = outFmt === "ogg"
+                ? ["audio/ogg;codecs=opus", "audio/ogg", "audio/webm;codecs=opus"]
+                : ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"];
+
+              setProgress(config.progressFillId, config.progressStatusId, 30, "Initializing " + outFmt.toUpperCase() + " encoder...");
+              encodeWithMediaRecorder(audioBuffer, mimeCandidates, bitrate, function (pct) {
+                setProgress(config.progressFillId, config.progressStatusId, 30 + Math.round(pct * 0.65), "Encoding " + outFmt.toUpperCase() + "... " + pct + "%");
+              }, function (encodedBlob) {
+                setProgress(config.progressFillId, config.progressStatusId, 100, "Conversion complete!");
+                triggerDownload(URL.createObjectURL(encodedBlob), outName, true);
+                showToast(outFmt.toUpperCase() + " music converted & downloaded!", "success");
+                convertBtn.disabled = false;
+                updateBitrateVisibility();
+              }, function (encErr) {
+                showToast(outFmt.toUpperCase() + " encoding failed: " + encErr.message, "error");
                 convertBtn.disabled = false;
                 updateBitrateVisibility();
               });
@@ -2775,6 +2796,86 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         encodeNextChunk();
+      } catch (err) {
+        onError(err);
+      }
+    }
+
+    function encodeWithMediaRecorder(audioBuffer, mimeCandidates, bitrate, onProgress, onComplete, onError) {
+      try {
+        if (typeof MediaRecorder === "undefined") {
+          throw new Error("MediaRecorder is not supported in this browser.");
+        }
+
+        var supportedMime = "";
+        for (var i = 0; i < mimeCandidates.length; i++) {
+          var mime = mimeCandidates[i];
+          if (!mime) continue;
+          if (MediaRecorder.isTypeSupported(mime)) {
+            supportedMime = mime;
+            break;
+          }
+        }
+
+        if (!supportedMime) {
+          throw new Error("Selected output format is not supported by this browser.");
+        }
+
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var source = audioCtx.createBufferSource();
+        source.buffer = audioBuffer;
+
+        var streamDest = audioCtx.createMediaStreamDestination();
+        source.connect(streamDest);
+
+        var recorderOptions = { mimeType: supportedMime };
+        if (!isNaN(bitrate) && bitrate > 0) {
+          recorderOptions.audioBitsPerSecond = bitrate * 1000;
+        }
+
+        var recorder = new MediaRecorder(streamDest.stream, recorderOptions);
+        var chunks = [];
+        var startedAt = Date.now();
+        var durationMs = Math.max(1, audioBuffer.duration * 1000);
+        var progressTimer = null;
+
+        recorder.ondataavailable = function (evt) {
+          if (evt.data && evt.data.size > 0) {
+            chunks.push(evt.data);
+          }
+        };
+
+        recorder.onerror = function (evt) {
+          if (progressTimer) clearInterval(progressTimer);
+          audioCtx.close();
+          onError((evt && evt.error) || new Error("MediaRecorder failed."));
+        };
+
+        recorder.onstop = function () {
+          if (progressTimer) clearInterval(progressTimer);
+          audioCtx.close();
+          if (!chunks.length) {
+            onError(new Error("No output audio was produced."));
+            return;
+          }
+          onProgress(100);
+          onComplete(new Blob(chunks, { type: supportedMime }));
+        };
+
+        source.onended = function () {
+          if (recorder.state !== "inactive") {
+            recorder.stop();
+          }
+        };
+
+        recorder.start(250);
+        source.start(0);
+
+        progressTimer = setInterval(function () {
+          var elapsed = Date.now() - startedAt;
+          var pct = Math.min(98, Math.round((elapsed / durationMs) * 100));
+          onProgress(pct);
+        }, 150);
       } catch (err) {
         onError(err);
       }

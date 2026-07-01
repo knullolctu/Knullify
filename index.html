@@ -947,7 +947,7 @@
       <div class="tab-panel" id="tab-audio" role="tabpanel">
         <div class="panel-card">
           <h3>Music Converter</h3>
-          <p class="panel-desc">Convert audio files like WAV, MP3, M4A, OGG, FLAC, AAC, and OPUS to MP3 or WAV offline.</p>
+          <p class="panel-desc">Convert audio files like WAV, MP3, M4A, OGG, FLAC, AAC, and OPUS to MP3, WAV, OGG, or WebM offline.</p>
           <label class="drop-zone" id="dz-audio" for="file-audio">
             <div class="dz-inner">
               <div class="dz-icon">🎵</div>
@@ -961,9 +961,11 @@
               <select id="audio-format" style="width: auto;">
                 <option value="mp3" selected>MP3 Audio (.mp3)</option>
                 <option value="wav">WAV Audio (.wav)</option>
+                <option value="ogg">OGG Audio (.ogg)</option>
+                <option value="webm">WebM Audio (.webm)</option>
               </select>
             </label>
-            <label id="audio-bitrate-wrap">MP3 Bitrate:
+            <label id="audio-bitrate-wrap">Encoding Bitrate:
               <select id="audio-bitrate" style="width: auto;">
                 <option value="128">128 kbps (Standard)</option>
                 <option value="192" selected>192 kbps (High Quality)</option>
@@ -990,7 +992,7 @@
       <div class="tab-panel" id="tab-video2music" role="tabpanel">
         <div class="panel-card">
           <h3>Video → Music Converter</h3>
-          <p class="panel-desc">Extract the audio track from video files and save it as MP3 or WAV offline.</p>
+          <p class="panel-desc">Extract the audio track from video files and save it as MP3, WAV, OGG, or WebM offline.</p>
           <label class="drop-zone" id="dz-video2music" for="file-video2music">
             <div class="dz-inner">
               <div class="dz-icon">🎬</div>
@@ -1004,9 +1006,11 @@
               <select id="video2music-format" style="width: auto;">
                 <option value="mp3" selected>MP3 Audio (.mp3)</option>
                 <option value="wav">WAV Audio (.wav)</option>
+                <option value="ogg">OGG Audio (.ogg)</option>
+                <option value="webm">WebM Audio (.webm)</option>
               </select>
             </label>
-            <label id="video2music-bitrate-wrap">MP3 Bitrate:
+            <label id="video2music-bitrate-wrap">Encoding Bitrate:
               <select id="video2music-bitrate" style="width: auto;">
                 <option value="128">128 kbps (Standard)</option>
                 <option value="192" selected>192 kbps (High Quality)</option>
