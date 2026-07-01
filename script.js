@@ -2491,118 +2491,164 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   })();
 
-  /* ==========================================================
-     18. Audio Converter (Web Audio API + lamejs)
-     ========================================================== */
-  (function () {
-    var _file         = null;
-    var convertBtn    = document.getElementById("btn-audio");
-    var formatSelect  = document.getElementById("audio-format");
-    var bitrateSelect = document.getElementById("audio-bitrate");
-    var bitrateWrap   = document.getElementById("audio-bitrate-wrap");
-    var labelEl       = document.getElementById("lbl-audio-filename");
-    var filenameInp   = document.getElementById("audio-filename");
-    var progressWrap  = document.getElementById("audio-progress");
+    /* ==========================================================
+       18. Media -> Music Converters (Web Audio API + lamejs)
+       ========================================================== */
+    (function () {
+      function setupMediaMusicConverter(config) {
+        var _file = null;
+        var convertBtn = document.getElementById(config.convertBtnId);
+        var formatSelect = document.getElementById(config.formatSelectId);
+        var bitrateSelect = document.getElementById(config.bitrateSelectId);
+        var bitrateWrap = document.getElementById(config.bitrateWrapId);
+        var labelEl = document.getElementById(config.labelId);
+        var filenameInp = document.getElementById(config.filenameId);
+        var progressWrap = document.getElementById(config.progressWrapId);
 
-    if (!convertBtn) return;
+        if (!convertBtn) return;
 
-    function updateBitrateVisibility() {
-      if (!formatSelect) return;
-      var format = formatSelect.value;
-      if (format === "wav") {
-        if (bitrateWrap) bitrateWrap.style.display = "none";
-        if (labelEl) labelEl.textContent = "Output WAV Filename";
-        if (convertBtn) convertBtn.textContent = "Convert & Download WAV";
-      } else {
-        if (bitrateWrap) bitrateWrap.style.display = "flex";
-        if (labelEl) labelEl.textContent = "Output MP3 Filename";
-        if (convertBtn) convertBtn.textContent = "Convert & Download MP3";
-      }
-    }
-
-    if (formatSelect) {
-      formatSelect.addEventListener("change", updateBitrateVisibility);
-    }
-
-    setupDropZone("dz-audio", "file-audio", function (file) {
-      _file = file;
-      markDropZone("dz-audio", file.name);
-      convertBtn.disabled = false;
-      if (filenameInp) {
-        filenameInp.value = basename(file.name);
-      }
-      updateBitrateVisibility();
-    }, {
-      onClear: function () {
-        _file = null;
-        convertBtn.disabled = true;
-        if (filenameInp) filenameInp.value = "";
-        if (progressWrap) progressWrap.hidden = true;
-      }
-    });
-
-    convertBtn.addEventListener("click", async function () {
-      if (!_file) return;
-      var outFmt = formatSelect ? formatSelect.value : "mp3";
-      var outName = getOutputFilename("audio-filename", outFmt);
-      if (!outName) return;
-
-      try {
-        convertBtn.disabled = true;
-        convertBtn.textContent = "Decoding audio...";
-        if (progressWrap) progressWrap.hidden = false;
-        setProgress("audio-fill", "audio-status", 5, "Loading file data...");
-
-        var fileData = await _file.arrayBuffer();
-        setProgress("audio-fill", "audio-status", 15, "Decoding audio track (client-side)...");
-
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        var audioBuffer;
-        try {
-          audioBuffer = await audioCtx.decodeAudioData(fileData);
-        } catch (decodeErr) {
-          throw new Error("Unable to decode file. Check if the audio/video format is supported by your browser.");
-        } finally {
-          audioCtx.close();
-        }
-
-        if (outFmt === "wav") {
-          setProgress("audio-fill", "audio-status", 60, "Writing WAV RIFF header & PCM samples...");
-          var wavBlob = audioBufferToWav(audioBuffer);
-          triggerDownload(URL.createObjectURL(wavBlob), outName, true);
-          setProgress("audio-fill", "audio-status", 100, "Conversion complete!");
-          showToast("WAV audio converted & downloaded!", "success");
-          convertBtn.disabled = false;
-          updateBitrateVisibility();
-        } else {
-          var bitrate = parseInt(bitrateSelect ? bitrateSelect.value : 192);
-          setProgress("audio-fill", "audio-status", 30, "Initializing MP3 encoder...");
-          if (typeof lamejs === "undefined") {
-            throw new Error("lamejs MP3 encoder library not loaded.");
+        function updateBitrateVisibility() {
+          if (!formatSelect) return;
+          var format = formatSelect.value;
+          if (format === "wav") {
+            if (bitrateWrap) bitrateWrap.style.display = "none";
+            if (labelEl) labelEl.textContent = "Output WAV Filename";
+            if (convertBtn) convertBtn.textContent = "Convert & Download WAV";
+          } else {
+            if (bitrateWrap) bitrateWrap.style.display = "flex";
+            if (labelEl) labelEl.textContent = "Output Music Filename";
+            if (convertBtn) convertBtn.textContent = "Convert & Download Music";
           }
-
-          encodeMp3(audioBuffer, bitrate, function (pct) {
-            setProgress("audio-fill", "audio-status", 30 + Math.round(pct * 0.65), "Encoding MP3... " + pct + "%");
-          }, function (mp3Blob) {
-            setProgress("audio-fill", "audio-status", 100, "Conversion complete!");
-            triggerDownload(URL.createObjectURL(mp3Blob), outName, true);
-            showToast("MP3 audio converted & downloaded!", "success");
-            convertBtn.disabled = false;
-            updateBitrateVisibility();
-          }, function (encErr) {
-            showToast("MP3 encoding failed: " + encErr.message, "error");
-            convertBtn.disabled = false;
-            updateBitrateVisibility();
-          });
         }
-      } catch (err) {
-        showToast("Audio conversion failed: " + err.message, "error");
-        console.error(err);
-        convertBtn.disabled = false;
-        updateBitrateVisibility();
-        if (progressWrap) progressWrap.hidden = true;
+
+        if (formatSelect) {
+          formatSelect.addEventListener("change", updateBitrateVisibility);
+        }
+
+        setupDropZone(config.dropZoneId, config.inputId, function (file) {
+          if (!file || !file.type.startsWith(config.acceptPrefix)) {
+            showToast(config.invalidFileMessage, "error");
+            return;
+          }
+          _file = file;
+          markDropZone(config.dropZoneId, file.name);
+          convertBtn.disabled = false;
+          if (filenameInp) {
+            filenameInp.value = basename(file.name);
+          }
+          updateBitrateVisibility();
+        }, {
+          onClear: function () {
+            _file = null;
+            convertBtn.disabled = true;
+            if (filenameInp) filenameInp.value = "";
+            if (progressWrap) progressWrap.hidden = true;
+          }
+        });
+
+        convertBtn.addEventListener("click", async function () {
+          if (!_file) return;
+          var outFmt = formatSelect ? formatSelect.value : "mp3";
+          var outName = getOutputFilename(config.filenameId, outFmt);
+          if (!outName) return;
+
+          try {
+            convertBtn.disabled = true;
+            convertBtn.textContent = "Decoding audio...";
+            if (progressWrap) progressWrap.hidden = false;
+            setProgress(config.progressFillId, config.progressStatusId, 5, "Loading file data...");
+
+            var fileData = await _file.arrayBuffer();
+            setProgress(config.progressFillId, config.progressStatusId, 15, "Decoding audio track (client-side)...");
+
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var audioBuffer;
+            try {
+              audioBuffer = await audioCtx.decodeAudioData(fileData);
+            } catch (decodeErr) {
+              throw new Error(config.decodeErrorMessage);
+            } finally {
+              audioCtx.close();
+            }
+
+            if (outFmt === "wav") {
+              setProgress(config.progressFillId, config.progressStatusId, 60, "Writing WAV RIFF header & PCM samples...");
+              var wavBlob = audioBufferToWav(audioBuffer);
+              triggerDownload(URL.createObjectURL(wavBlob), outName, true);
+              setProgress(config.progressFillId, config.progressStatusId, 100, "Conversion complete!");
+              showToast(config.wavSuccessMessage, "success");
+              convertBtn.disabled = false;
+              updateBitrateVisibility();
+            } else {
+              var bitrate = parseInt(bitrateSelect ? bitrateSelect.value : 192);
+              setProgress(config.progressFillId, config.progressStatusId, 30, "Initializing MP3 encoder...");
+              if (typeof lamejs === "undefined") {
+                throw new Error("lamejs MP3 encoder library not loaded.");
+              }
+
+              encodeMp3(audioBuffer, bitrate, function (pct) {
+                setProgress(config.progressFillId, config.progressStatusId, 30 + Math.round(pct * 0.65), "Encoding MP3... " + pct + "%");
+              }, function (mp3Blob) {
+                setProgress(config.progressFillId, config.progressStatusId, 100, "Conversion complete!");
+                triggerDownload(URL.createObjectURL(mp3Blob), outName, true);
+                showToast(config.mp3SuccessMessage, "success");
+                convertBtn.disabled = false;
+                updateBitrateVisibility();
+              }, function (encErr) {
+                showToast("MP3 encoding failed: " + encErr.message, "error");
+                convertBtn.disabled = false;
+                updateBitrateVisibility();
+              });
+            }
+          } catch (err) {
+            showToast(config.failMessage + err.message, "error");
+            console.error(err);
+            convertBtn.disabled = false;
+            updateBitrateVisibility();
+            if (progressWrap) progressWrap.hidden = true;
+          }
+        });
       }
-    });
+
+      setupMediaMusicConverter({
+        dropZoneId: "dz-audio",
+        inputId: "file-audio",
+        convertBtnId: "btn-audio",
+        formatSelectId: "audio-format",
+        bitrateSelectId: "audio-bitrate",
+        bitrateWrapId: "audio-bitrate-wrap",
+        labelId: "lbl-audio-filename",
+        filenameId: "audio-filename",
+        progressWrapId: "audio-progress",
+        progressFillId: "audio-fill",
+        progressStatusId: "audio-status",
+        acceptPrefix: "audio/",
+        invalidFileMessage: "Please select an audio file.",
+        decodeErrorMessage: "Unable to decode audio file. Check if the format is supported by your browser.",
+        failMessage: "Audio conversion failed: ",
+        wavSuccessMessage: "WAV music converted & downloaded!",
+        mp3SuccessMessage: "MP3 music converted & downloaded!"
+      });
+
+      setupMediaMusicConverter({
+        dropZoneId: "dz-video2music",
+        inputId: "file-video2music",
+        convertBtnId: "btn-video2music",
+        formatSelectId: "video2music-format",
+        bitrateSelectId: "video2music-bitrate",
+        bitrateWrapId: "video2music-bitrate-wrap",
+        labelId: "lbl-video2music-filename",
+        filenameId: "video2music-filename",
+        progressWrapId: "video2music-progress",
+        progressFillId: "video2music-fill",
+        progressStatusId: "video2music-status",
+        acceptPrefix: "video/",
+        invalidFileMessage: "Please select a video file.",
+        decodeErrorMessage: "Unable to decode video file. Check if the format is supported by your browser.",
+        failMessage: "Video conversion failed: ",
+        wavSuccessMessage: "WAV music converted & downloaded!",
+        mp3SuccessMessage: "MP3 music converted & downloaded!"
+      });
 
     function audioBufferToWav(buffer) {
       var numOfChan = buffer.numberOfChannels,

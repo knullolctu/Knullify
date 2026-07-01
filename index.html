@@ -14,11 +14,11 @@
   <link rel="apple-touch-icon" href="icon-192.png" />
 
   <!-- SEO Meta Tags -->
-  <title>Knullify – Free Online File Converter | PNG JPG PDF SVG CBZ Spreadsheet Audio</title>
+  <title>Knullify – Free Online File Converter | PNG JPG PDF SVG CBZ Spreadsheet Video to Music</title>
   <meta name="description"
-    content="Free online file converter. Convert PNG to JPG, JPG to PNG, SVG to PNG/JPG, PDF to Image (CBZ/ZIP), Image (CBZ/ZIP) to PDF, Spreadsheet (Excel/CSV/JSON), Audio (MP4/WAV to MP3) — all in your browser. 100% free & offline." />
+    content="Free online file converter. Convert PNG to JPG, JPG to PNG, SVG to PNG/JPG, PDF to Image (CBZ/ZIP), Image (CBZ/ZIP) to PDF, Spreadsheet (Excel/CSV/JSON), and Video to Music (MP4/WebM to MP3/WAV) — all in your browser. 100% free & offline." />
   <meta name="keywords"
-    content="png to jpg converter, spreadsheet converter, svg to png, audio converter, mp4 to mp3, cbz to pdf, pdf to cbz, free online file converter, client-side converter, no upload" />
+    content="png to jpg converter, spreadsheet converter, svg to png, video to music converter, mp4 to mp3, webm to mp3, cbz to pdf, pdf to cbz, free online file converter, client-side converter, no upload" />
   <meta name="author" content="Knull" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://knullolctu.github.io/Knullify/" />
@@ -27,7 +27,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Knullify – Free Online File Converter" />
   <meta property="og:description"
-    content="Convert PNG↔JPG, SVG↔PNG/JPG, PDF↔Image (CBZ/ZIP), Spreadsheet, and Audio — instantly in your browser. 100% Free & Offline." />
+    content="Convert PNG↔JPG, SVG↔PNG/JPG, PDF↔Image (CBZ/ZIP), Spreadsheet, and Video to Music — instantly in your browser. 100% Free & Offline." />
   <meta property="og:url" content="https://knullolctu.github.io/Knullify/" />
   <meta property="og:image" content="https://knullolctu.github.io/Knullify/og-image.png" />
 
@@ -35,7 +35,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Knullify – Free Online File Converter" />
   <meta name="twitter:description"
-    content="Convert PNG↔JPG, SVG↔Image, PDF↔Image (CBZ/ZIP), Spreadsheet, and Audio — instantly in your browser." />
+    content="Convert PNG↔JPG, SVG↔Image, PDF↔Image (CBZ/ZIP), Spreadsheet, and Video to Music — instantly in your browser." />
   <meta name="twitter:creator" content="@knull" />
 
   <!-- Schema.org Structured Data -->
@@ -126,7 +126,7 @@
     </div>
     <div class="hero-ticker" aria-hidden="true">
       <div class="ticker-track">
-        <span>PNG → JPG</span><span>JPG → PNG</span><span>PDF → Image</span><span>PDF → CBZ</span><span>Images → PDF</span><span>CBZ → PDF</span><span>Excel → CSV</span><span>CSV → JSON</span><span>SVG → PNG</span><span>SVG → JPG</span><span>MP4 → MP3</span><span>WAV → MP3</span><span>Text → Image</span><span>Image → Text (OCR)</span><span>PDF → Text</span><span>Text → PDF</span><span>Resize Image</span><span>Compress Image</span><span>Merge Images</span><span>PDF Resizer</span><span>PDF Merger</span><span>PDF Compressor</span><span>DOCX → PDF</span>
+        <span>PNG → JPG</span><span>JPG → PNG</span><span>PDF → Image</span><span>PDF → CBZ</span><span>Images → PDF</span><span>CBZ → PDF</span><span>Excel → CSV</span><span>CSV → JSON</span><span>SVG → PNG</span><span>SVG → JPG</span><span>Video → Music</span><span>MP4 → MP3</span><span>WAV → MP3</span><span>Text → Image</span><span>Image → Text (OCR)</span><span>PDF → Text</span><span>Text → PDF</span><span>Resize Image</span><span>Compress Image</span><span>Merge Images</span><span>PDF Resizer</span><span>PDF Merger</span><span>PDF Compressor</span><span>DOCX → PDF</span>
       </div>
     </div>
   </section>
@@ -168,7 +168,8 @@
           PDF</button>
         <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-spreadsheet" data-tab="spreadsheet" title="Convert Excel, CSV, and JSON spreadsheets client-side"><span class="tab-icon">📊</span>Excel / CSV / JSON</button>
         <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-svg2img" data-tab="svg2img" title="Convert SVG vectors to PNG/JPG at any scale"><span class="tab-icon">✏️</span>SVG → PNG / JPG</button>
-        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-audio" data-tab="audio" title="Extract and convert audio from videos or audio files to MP3/WAV"><span class="tab-icon">🎵</span>Audio Converter</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-audio" data-tab="audio" title="Convert audio files like M4A, WAV, MP3, and FLAC to MP3/WAV"><span class="tab-icon">🎵</span>Music Converter</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-video2music" data-tab="video2music" title="Extract audio from video files and convert it to MP3/WAV"><span class="tab-icon">🎬</span>Video → Music</button>
       </div>
 
       <!-- ---- PNG to JPG ---- -->
@@ -942,18 +943,18 @@
         </div>
       </div>
 
-      <!-- ---- Audio Converter ---- -->
+      <!-- ---- Music Converter ---- -->
       <div class="tab-panel" id="tab-audio" role="tabpanel">
         <div class="panel-card">
-          <h3>Audio Converter</h3>
-          <p class="panel-desc">Extract audio from video (MP4/WebM) or convert audio (WAV, MP3, M4A) to MP3/WAV offline.</p>
+          <h3>Music Converter</h3>
+          <p class="panel-desc">Convert audio files like WAV, MP3, M4A, OGG, and FLAC to MP3 or WAV offline.</p>
           <label class="drop-zone" id="dz-audio" for="file-audio">
             <div class="dz-inner">
               <div class="dz-icon">🎵</div>
-              <div class="dz-text">Drop Video/Audio file here or <span>browse</span></div>
-              <div class="dz-hint">Supports: .mp4, .webm, .wav, .mp3, .m4a, .ogg, .flac</div>
+              <div class="dz-text">Drop audio file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .wav, .mp3, .m4a, .ogg, .flac, .aac</div>
             </div>
-            <input type="file" id="file-audio" accept="audio/*,video/*" hidden />
+            <input type="file" id="file-audio" accept="audio/*" hidden />
           </label>
           <div class="options-grid">
             <label>Output Format:
@@ -972,7 +973,7 @@
             </label>
           </div>
           <div class="form-group filename-option-group" style="margin-top: 16px;">
-            <label for="audio-filename" id="lbl-audio-filename">Output MP3 Filename</label>
+            <label for="audio-filename" id="lbl-audio-filename">Output Music Filename</label>
             <input type="text" id="audio-filename" placeholder="Enter output filename (without extension)" required />
           </div>
           <div id="audio-progress" class="progress-wrap" hidden>
@@ -981,7 +982,50 @@
             </div>
             <span id="audio-status"></span>
           </div>
-          <button class="btn-convert" id="btn-audio" disabled>Convert &amp; Download MP3</button>
+          <button class="btn-convert" id="btn-audio" disabled>Convert &amp; Download Music</button>
+        </div>
+      </div>
+
+      <!-- ---- Video to Music Converter ---- -->
+      <div class="tab-panel" id="tab-video2music" role="tabpanel">
+        <div class="panel-card">
+          <h3>Video → Music Converter</h3>
+          <p class="panel-desc">Extract the audio track from video files and save it as MP3 or WAV offline.</p>
+          <label class="drop-zone" id="dz-video2music" for="file-video2music">
+            <div class="dz-inner">
+              <div class="dz-icon">🎬</div>
+              <div class="dz-text">Drop video file here or <span>browse</span></div>
+              <div class="dz-hint">Supports: .mp4, .webm, .mov, .m4v</div>
+            </div>
+            <input type="file" id="file-video2music" accept="video/*" hidden />
+          </label>
+          <div class="options-grid">
+            <label>Output Format:
+              <select id="video2music-format" style="width: auto;">
+                <option value="mp3" selected>MP3 Audio (.mp3)</option>
+                <option value="wav">WAV Audio (.wav)</option>
+              </select>
+            </label>
+            <label id="video2music-bitrate-wrap">MP3 Bitrate:
+              <select id="video2music-bitrate" style="width: auto;">
+                <option value="128">128 kbps (Standard)</option>
+                <option value="192" selected>192 kbps (High Quality)</option>
+                <option value="256">256 kbps (Very High)</option>
+                <option value="320">320 kbps (Extreme/Archival)</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-group filename-option-group" style="margin-top: 16px;">
+            <label for="video2music-filename" id="lbl-video2music-filename">Output Music Filename</label>
+            <input type="text" id="video2music-filename" placeholder="Enter output filename (without extension)" required />
+          </div>
+          <div id="video2music-progress" class="progress-wrap" hidden>
+            <div class="progress-bar">
+              <div class="progress-fill" id="video2music-fill"></div>
+            </div>
+            <span id="video2music-status"></span>
+          </div>
+          <button class="btn-convert" id="btn-video2music" disabled>Convert &amp; Download Music</button>
         </div>
       </div>
 
