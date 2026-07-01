@@ -1,4 +1,4 @@
-# ⚡ Knullify — Free Online File Converter
+# Knullify — Free Online File Converter
 
 > **Convert files instantly in your browser. No upload. No server. No signup. 100% Free.**
 
