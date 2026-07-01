@@ -104,6 +104,13 @@ document.addEventListener("DOMContentLoaded", function () {
     return filename.replace(/\.[^/.]+$/, "");
   }
 
+  function hasAllowedExtension(fileName, extensions) {
+    var lowerName = (fileName || "").toLowerCase();
+    return extensions.some(function (ext) {
+      return lowerName.endsWith("." + ext);
+    });
+  }
+
   function formatBytes(bytes) {
     if (bytes < 1024)           return bytes + " B";
     if (bytes < 1024 * 1024)    return (bytes / 1024).toFixed(1) + " KB";
@@ -2525,8 +2532,14 @@ document.addEventListener("DOMContentLoaded", function () {
           formatSelect.addEventListener("change", updateBitrateVisibility);
         }
 
+        function isAcceptedFile(file) {
+          if (!file) return false;
+          if (file.type && file.type.startsWith(config.acceptPrefix)) return true;
+          return hasAllowedExtension(file.name, config.acceptedExtensions);
+        }
+
         setupDropZone(config.dropZoneId, config.inputId, function (file) {
-          if (!file || !file.type.startsWith(config.acceptPrefix)) {
+        if (!isAcceptedFile(file)) {
             showToast(config.invalidFileMessage, "error");
             return;
           }
@@ -2623,6 +2636,7 @@ document.addEventListener("DOMContentLoaded", function () {
         progressFillId: "audio-fill",
         progressStatusId: "audio-status",
         acceptPrefix: "audio/",
+        acceptedExtensions: ["wav", "mp3", "m4a", "ogg", "flac", "aac", "opus", "oga", "weba"],
         invalidFileMessage: "Please select an audio file.",
         decodeErrorMessage: "Unable to decode audio file. Check if the format is supported by your browser.",
         failMessage: "Audio conversion failed: ",
@@ -2643,6 +2657,7 @@ document.addEventListener("DOMContentLoaded", function () {
         progressFillId: "video2music-fill",
         progressStatusId: "video2music-status",
         acceptPrefix: "video/",
+        acceptedExtensions: ["mp4", "webm", "mov", "m4v", "mkv", "avi", "3gp", "m2ts", "mts"],
         invalidFileMessage: "Please select a video file.",
         decodeErrorMessage: "Unable to decode video file. Check if the format is supported by your browser.",
         failMessage: "Video conversion failed: ",
